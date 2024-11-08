@@ -22,4 +22,10 @@
         android:name="com.example.cmpt362_finalproject.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_transactions"
+        android:name="com.example.cmpt362_finalproject.ui.transactions.TransactionsFragment"
+        android:label="Transactions"
+        tools:layout="@layout/fragment_transactions" />
 </navigation>
