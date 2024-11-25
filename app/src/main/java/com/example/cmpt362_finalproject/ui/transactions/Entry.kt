@@ -10,11 +10,12 @@ data class Entry(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
-    @ColumnInfo(name = "cost_column")
-    var paid: Int = 0,
 
     @ColumnInfo(name = "store_name_column")
     var storeName: String = "",
+
+    @ColumnInfo(name = "cost_column")
+    var paid: Int = 0,
 
     @ColumnInfo(name = "date_time")
     var dateTime: Long = 0L,
