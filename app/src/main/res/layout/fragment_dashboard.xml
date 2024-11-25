@@ -11,6 +11,7 @@
         android:orientation="vertical"
         android:padding="0dp">
 
+        <!-- Welcome Message -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,24 +21,19 @@
             android:paddingLeft="10dp"
             android:paddingTop="4dp">
 
-
-
-
-
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome Jonathan "
+                android:text="Welcome Jonathan"
                 android:textSize="24sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
+        <!-- Total Balance Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:background="#000000"
             android:padding="18dp">
 
@@ -47,21 +43,21 @@
                 android:orientation="vertical"
                 android:background="#000000"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="8dp"
                 android:layout_gravity="center">
 
+                <!-- Title -->
                 <TextView
+                    android:id="@+id/totalBalanceLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your total balance"
+                    android:text="Your Total Balance"
                     android:textColor="#B0B0B0"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:layout_gravity="center" />
 
+                <!-- Total Balance Value -->
                 <TextView
+                    android:id="@+id/totalBalanceValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$8,000.49"
@@ -71,6 +67,7 @@
                     android:layout_gravity="center"
                     android:paddingTop="8dp" />
 
+                <!-- Income and Spend -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -79,14 +76,16 @@
                     android:gravity="center_horizontal">
 
                     <TextView
+                        android:id="@+id/incomeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Income"
                         android:textColor="#00FF00"
                         android:textSize="14sp"
-                        android:layout_marginEnd="8dp"/>
+                        android:layout_marginEnd="8dp" />
 
                     <TextView
+                        android:id="@+id/incomeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$101,080.00"
@@ -95,6 +94,7 @@
                         android:layout_marginEnd="32dp" />
 
                     <TextView
+                        android:id="@+id/spendLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Spend"
@@ -103,23 +103,23 @@
                         android:layout_marginEnd="8dp" />
 
                     <TextView
+                        android:id="@+id/spendValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$56,510.34"
                         android:textColor="#FF0000"
                         android:textSize="14sp" />
                 </LinearLayout>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Monthly Limit Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:paddingTop="20dp"
-            android:background="#D7BBF5"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="#D7BBF5">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -127,20 +127,21 @@
                 android:orientation="vertical"
                 android:background="#D7BBF5"
                 android:padding="16dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="8dp"
                 android:layout_gravity="center">
 
+                <!-- Title -->
                 <TextView
+                    android:id="@+id/monthlyLimitLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Limit for this month"
+                    android:text="Limit for this Month"
                     android:textColor="#333333"
                     android:textSize="14sp"
-                    android:layout_gravity="center"/>
+                    android:layout_gravity="center" />
 
+                <!-- Monthly Limit Value -->
                 <TextView
+                    android:id="@+id/monthlyLimitValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$700.51"
@@ -150,61 +151,59 @@
                     android:layout_gravity="center"
                     android:paddingTop="8dp" />
 
-                <LinearLayout
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/monthlyProgress"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_horizontal">
+                    android:layout_height="8dp"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:progressDrawable="@drawable/progress_bar_custom"
+                    android:progress="73"
+                    android:layout_marginTop="8dp" />
 
-                    <ProgressBar
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"
-                        style="@android:style/Widget.ProgressBar.Horizontal"
-                        android:progressDrawable="@drawable/progress_bar_custom"
-                        android:progress="73"
-                        android:layout_marginBottom="8dp" />
-                </LinearLayout>
-
+                <!-- Monthly Progress Details -->
                 <TextView
+                    android:id="@+id/monthlyProgressDetails"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2,100.42 / 3,000.00"
                     android:textColor="#888888"
                     android:textSize="14sp"
-                    android:gravity="center"
                     android:layout_gravity="center" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Expenses Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Expenses"
             android:textSize="20sp"
-            android:paddingLeft="10dp"
             android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="10dp" />
 
+        <!-- Pie Chart -->
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginBottom="16dp" />
 
+        <!-- Recent Transactions -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recent"
+            android:text="Recent Transactions"
             android:textSize="18sp"
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="8dp" />
 
+        <!-- Transactions RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recyclerViewTransactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp" />
-
     </LinearLayout>
 </ScrollView>

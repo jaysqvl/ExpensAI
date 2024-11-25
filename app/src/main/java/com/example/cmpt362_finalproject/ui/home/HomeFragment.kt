@@ -4,35 +4,49 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cmpt362_finalproject.R
 import com.example.cmpt362_finalproject.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
+    private val homeViewModel: HomeViewModel by viewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val view = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        // Observe ViewModel data
+        homeViewModel.recentActivities.observe(viewLifecycleOwner) { activities ->
+            binding.recyclerViewRecentActivity.layoutManager = LinearLayoutManager(context)
+            binding.recyclerViewRecentActivity.adapter = RecentActivityAdapter(activities)
         }
-        return root
+
+        homeViewModel.dailySpending.observe(viewLifecycleOwner) {
+            binding.textViewDailySpending.text = it
+        }
+
+        homeViewModel.weeklySpending.observe(viewLifecycleOwner) {
+            binding.textViewWeeklySpending.text = it
+        }
+
+        homeViewModel.savingsGoal.observe(viewLifecycleOwner) {
+            binding.textViewSavingsGoal.text = it
+        }
+
+        homeViewModel.challenge.observe(viewLifecycleOwner) {
+            binding.textViewChallenge.text = it
+        }
+
+        return view
     }
 
     override fun onDestroyView() {
