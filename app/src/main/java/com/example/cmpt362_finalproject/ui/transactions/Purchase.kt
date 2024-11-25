@@ -6,3 +6,5 @@ data class Purchase(
     val amount: Double,
     val date: Long
 )
+
+data class Header(val title: String)
