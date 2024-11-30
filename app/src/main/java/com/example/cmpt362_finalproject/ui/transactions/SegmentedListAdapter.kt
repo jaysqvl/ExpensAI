@@ -11,9 +11,6 @@ import com.example.cmpt362_finalproject.R
 
 class SegmentedListAdapter(private val context: Context, private var currentEntryList: List<Any>) :
     BaseAdapter() {
-
-
-
     override fun getCount(): Int = currentEntryList.size
 
     override fun getItem(position: Int): Any = currentEntryList[position]

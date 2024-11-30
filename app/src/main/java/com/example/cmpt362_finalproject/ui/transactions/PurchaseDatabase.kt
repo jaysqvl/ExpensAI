@@ -11,7 +11,6 @@ abstract class PurchaseDatabase: RoomDatabase() {
 
     abstract val commentDatabaseDao: PurchaseDatabaseDAO //Every database has a DAO
     companion object{
-        //The Volatile keyword guarantees visibility of changes to the INSTANCE variable across threads
         @Volatile
         private var INSTANCE: PurchaseDatabase? = null
 
@@ -28,4 +27,5 @@ abstract class PurchaseDatabase: RoomDatabase() {
         }
     }
 }
+
 
