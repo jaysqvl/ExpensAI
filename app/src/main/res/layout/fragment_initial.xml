@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+    android:id="@+id/initial_activity_title"
+    android:text="@string/initial_activity_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="36dp"
+    android:textColor="@color/black"
+    android:paddingTop="70dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="16dp"
+    android:gravity="center"/>
+<TextView
+    android:id="@+id/initial_activity_desc"
+    android:text="@string/initial_activity_desc"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20dp"
+    app:layout_constraintTop_toBottomOf="@id/initial_activity_title"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="20dp"
+    android:gravity="center"/>
+<ImageView
+    android:id="@+id/signin_image"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:src="@drawable/signin_image"
+
+    app:layout_constraintDimensionRatio="1:1"
+    app:layout_constraintTop_toBottomOf="@id/initial_activity_desc"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/>
+
+<Button
+    android:id="@+id/login_btn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Log in"
+    android:textColor="@android:color/white"
+    android:background="@drawable/login_btn"
+    android:onClick="loginView"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginBottom="80dp"
+    android:layout_marginTop="20dp"/>
+    <Button
+        android:id="@+id/signup_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        android:textColor="@android:color/white"
+        android:background="@drawable/signup_btn"
+        android:onClick="signupView"
+        app:layout_constraintBottom_toTopOf="@+id/login_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="20dp"/>
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_signin_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/login_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Sign in with Google" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

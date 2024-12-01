@@ -3,4 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="initial_activity_title">ExpensAI</string>
+    <string name="initial_activity_desc">Manage your expense in a tap</string>
+    <string name="default_web_client_id">740325681884-7o4g8v9jsgos7pv7hpolsa4kr7fagvq7.apps.googleusercontent.com</string>
 </resources>
