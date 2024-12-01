@@ -6,9 +6,54 @@ from flask import jsonify, request
 # Initialize OpenAI client
 client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
+MAX_SUMMARY_TOKENS = 200
+MAX_INSIGHT_TOKENS = 200
+
 # Configurable prompts for each endpoint
-SUMMARY_PROMPT = "Summarize the following text:"
-INSIGHT_PROMPT = "Provide insights on the following text:"
+SUMMARY_PROMPT = """
+    Summarize the following transaction data. Your summary should include:
+    1. The total number of transactions.
+    2. The total amount spent across all transactions.
+    3. The category with the highest spending.
+    4. Any notable trends (e.g., a significant increase in spending in certain categories).
+    5. Your final recommendations for me.
+
+    Format your response as JSON:
+    {
+        "total_transactions": <number>,
+        "total_spent": <amount>,
+        "highest_spending_category": "<category>",
+        "trends": "<description>",
+        "recommendations": [
+            "<recommendation 1>",
+            "<recommendation 2>",
+            ...
+        ]
+    }
+
+    Transaction Data:
+    <Insert transaction data here>
+"""
+
+INSIGHT_PROMPT = """
+    Analyze the following transaction data and generate actionable insights for the user. Your insights should include:
+    1. Spending patterns (e.g., consistent, increasing, or decreasing).
+    2. Unusual spending behavior (e.g., spikes in specific categories or large one-time expenses).
+    3. Recommendations to optimize spending or save money.
+
+    Format your response as JSON:
+    {
+        "spending_pattern": "<description>",
+        "unusual_behavior": "<description>",
+        "recommendations": [
+            "<recommendation 1>",
+            "<recommendation 2>"
+        ]
+    }
+
+    Transaction Data:
+    <Insert transaction data here>
+"""
 
 @functions_framework.http
 def text_service(request):
@@ -18,7 +63,7 @@ def text_service(request):
 
     # Ensure the request method is POST
     if request.method != 'POST':
-        return 'Only POST method is supported', 405
+        return jsonify({'error': 'Only POST method is supported'}), 405
 
     # Parse request JSON
     request_json = request.get_json(silent=True)
@@ -29,17 +74,17 @@ def text_service(request):
     endpoint = request_json['endpoint']
     input_text = request_json['input']
 
+    # Validate input length
+    if len(input_text) > 10000:  # Example max input length
+        return jsonify({'error': 'Input text exceeds maximum allowed length (10,000 characters)'}), 400
+
     # Dispatch to the correct handler based on the endpoint
     if endpoint == 'summary':
-        response_data = handle_summary(input_text)
+        return handle_summary(input_text)
     elif endpoint == 'insight':
-        response_data = handle_insight(input_text)
+        return handle_insight(input_text)
     else:
-        response_data = jsonify({'error': 'Invalid endpoint specified'}), 400
-
-    # Add CORS headers to the response
-    response_data.headers.add('Access-Control-Allow-Origin', '*')
-    return response_data
+        return jsonify({'error': 'Invalid endpoint specified'}), 400
 
 # Helper function for handling CORS preflight requests
 def cors_preflight_response():
@@ -57,12 +102,12 @@ def handle_summary(input_text):
         response = client.completions.create(
             model="gpt-4o-mini",
             prompt=f"{SUMMARY_PROMPT} {input_text}",
-            max_tokens=50
+            max_tokens=MAX_SUMMARY_TOKENS
         )
         result_text = response.choices[0].text.strip()
         return jsonify({'output': result_text}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f"Failed to generate summary: {str(e)}"}), 500
 
 # Helper function for generating insights from text
 def handle_insight(input_text):
@@ -70,9 +115,9 @@ def handle_insight(input_text):
         response = client.completions.create(
             model="gpt-4o-mini",
             prompt=f"{INSIGHT_PROMPT} {input_text}",
-            max_tokens=100
+            max_tokens=MAX_INSIGHT_TOKENS
         )
         result_text = response.choices[0].text.strip()
         return jsonify({'output': result_text}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f"Failed to generate insights: {str(e)}"}), 500

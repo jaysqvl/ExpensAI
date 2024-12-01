@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt") //XD added
     alias(libs.plugins.google.gms.google.services)
 }
 
@@ -40,6 +41,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.appcompat)
@@ -54,6 +57,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,4 +68,11 @@ dependencies {
 //    implementation("androidx.credentials:credentials:1.2.2")
 //    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
 //    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // Room components
+    val room_version = "2.6.0"
+    val lifecycle_version = "2.6.2"
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx: $lifecycle_version")
 }

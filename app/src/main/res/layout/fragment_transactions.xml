@@ -11,6 +11,11 @@
         android:layout_height="wrap_content"
         android:queryHint="Search Transactions"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/temp_addEntriesButton" />
+
     <ListView
         android:id="@+id/transaction_listview"
         android:layout_width="match_parent"
