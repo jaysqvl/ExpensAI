@@ -33,6 +33,19 @@ class InitialFragment : Fragment() {
 
         auth = FirebaseAuth.getInstance()
 
+        // Check if user is already signed in
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            if (isPreferencesCompleted()) {
+                requireActivity().startActivity(
+                    Intent(requireContext(), MainActivity::class.java)
+                )
+                requireActivity().finish()
+            } else {
+                (activity as InitialActivity).replaceFragment(PreferenceFragment())
+            }
+        }
+
         view.findViewById<View>(R.id.signup_btn).setOnClickListener {
             (activity as? InitialActivity)?.replaceFragment(SignupFragment())
         }

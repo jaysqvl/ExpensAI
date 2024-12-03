@@ -4,7 +4,10 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface VisionService {
-    @POST("visionservice") // Only the endpoint path here
+    @POST("visionservice")
+    suspend fun processImage(@Body request: VisionRequest): VisionResponse
+    
+    @POST("visionservice")
     suspend fun getVisionResponse(@Body request: VisionRequest): VisionResponse
 }
 
