@@ -30,7 +30,7 @@ class DemoAPIViewModel : ViewModel() {
     private val visionService = ApiClient.visionRetrofit.create(com.example.cmpt362_finalproject.api.VisionService::class.java)
 
     /**
-     * Demonstrates how to call the TextService to fetch a response.
+     * Shows you how to call the TextService to process text data in a viewmodel
      * @param endpoint The endpoint type (e.g., "summary" or "insight").
      * @param inputText The input data for the API.
      */
@@ -38,7 +38,9 @@ class DemoAPIViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = TextRequest(endpoint = endpoint, input = inputText)
+
                 val response = textService.getTextResponse(request)
+
                 _textResponse.postValue(response)
             } catch (e: Exception) {
                 _error.postValue("Failed to fetch text response: ${e.message}")
@@ -47,7 +49,7 @@ class DemoAPIViewModel : ViewModel() {
     }
 
     /**
-     * Demonstrates how to call the VisionService to process an image.
+     * Shows you how to call the VisionService to process an image in a viewmodel.
      * @param base64Image The Base64-encoded image data.
      */
     fun fetchVisionResponse(base64Image: String) {
