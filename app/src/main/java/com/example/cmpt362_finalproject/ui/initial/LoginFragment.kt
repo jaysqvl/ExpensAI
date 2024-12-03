@@ -1,5 +1,6 @@
 package com.example.cmpt362_finalproject.ui.initial
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import androidx.fragment.app.Fragment
 import com.example.cmpt362_finalproject.InitialActivity
+import com.example.cmpt362_finalproject.MainActivity
 import com.example.cmpt362_finalproject.R
 import com.example.cmpt362_finalproject.ui.PreferenceFragment
 
@@ -45,7 +47,10 @@ class LoginFragment : Fragment() {
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                            (activity as InitialActivity).replaceFragment(PreferenceFragment())
+                            requireActivity().startActivity(
+                                Intent(requireContext(), MainActivity::class.java)
+                            )
+                            requireActivity().finish()
                         } else {
                             Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
