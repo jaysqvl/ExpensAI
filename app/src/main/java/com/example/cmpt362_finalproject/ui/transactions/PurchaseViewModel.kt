@@ -1,16 +1,27 @@
 package com.example.cmpt362_finalproject.ui.transactions
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import java.lang.IllegalArgumentException
+import kotlinx.coroutines.launch
 
 class PurchaseViewModel(private val repository: PurchaseRepository) : ViewModel() {
     val allCommentsLiveData: LiveData<List<Entry>> = repository.allPurchases.asLiveData()
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
 
     fun insert(entry: Entry) {
-        repository.insert(entry)
+        viewModelScope.launch {
+            try {
+                repository.insert(entry)
+            } catch (e: Exception) {
+                _error.value = "Failed to save transaction: ${e.message}"
+            }
+        }
     }
 
     fun deleteFirst(){

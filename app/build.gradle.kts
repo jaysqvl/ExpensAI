@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt") //XD added
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -61,10 +63,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
-    implementation("com.google.firebase:firebase-auth")
-//    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.google.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.play.services.auth)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.javax.inject)
 //    implementation("androidx.credentials:credentials:1.2.2")
 //    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
 //    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
@@ -72,7 +76,7 @@ dependencies {
     // Room components
     val room_version = "2.6.0"
     val lifecycle_version = "2.6.2"
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.androidx.room.ktx)
     kapt("androidx.room:room-compiler:$room_version")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx: $lifecycle_version")
 }

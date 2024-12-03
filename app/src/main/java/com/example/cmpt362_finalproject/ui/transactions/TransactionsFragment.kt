@@ -14,7 +14,7 @@ import java.util.ArrayList
 import com.example.cmpt362_finalproject.R
 import java.text.SimpleDateFormat
 import java.util.Date
-
+import com.example.cmpt362_finalproject.manager.FirestoreManager
 
 class TransactionsFragment : Fragment() {
     private lateinit var listadapter: SegmentedListAdapter
@@ -34,7 +34,7 @@ class TransactionsFragment : Fragment() {
 
         database = PurchaseDatabase.getInstance(requireActivity())
         databaseDao = database.commentDatabaseDao
-        repository = PurchaseRepository(databaseDao)
+        repository = PurchaseRepository(databaseDao, FirestoreManager())
         viewModelFactory = PurchaseViewModelFactory(repository)
         purchaseViewModel = ViewModelProvider(
             requireActivity(),
@@ -100,8 +100,6 @@ class TransactionsFragment : Fragment() {
             val date = Date(entry.dateTime * 1000)
             val year = SimpleDateFormat("yyyy").format(date).toInt()
             val month = SimpleDateFormat("MM").format(date).toInt()
-
-
         }
 
 
