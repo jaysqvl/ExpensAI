@@ -22,14 +22,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.cmpt362_finalproject.R
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
+import com.example.cmpt362_finalproject.manager.FirestoreManager
+import com.example.cmpt362_finalproject.api.ApiClient
+import com.example.cmpt362_finalproject.manager.TransactionManager
+
+// import textService
 
 class CameraFragment : Fragment() {
-    private val viewModel: CameraViewModel by viewModels()
+    private lateinit var viewModel: CameraViewModel
     private var currentPhotoPath: String? = null
     private lateinit var receiptImageView: ImageView
     private var currentBitmap: Bitmap? = null
@@ -66,6 +72,19 @@ class CameraFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_camera, container, false)
+        
+        // Initialize ViewModel first
+        val database = PurchaseDatabase.getInstance(requireContext())
+        val repository = PurchaseRepository(database.commentDatabaseDao, FirestoreManager())
+        val transactionManager = TransactionManager(
+            repository,
+            ApiClient.textService,
+            ApiClient.visionService
+        )
+        viewModel = ViewModelProvider(
+            this,
+            CameraViewModelFactory(transactionManager)
+        )[CameraViewModel::class.java]
         
         receiptImageView = view.findViewById(R.id.receiptImageView)
         val submitButton = view.findViewById<Button>(R.id.submitButton)

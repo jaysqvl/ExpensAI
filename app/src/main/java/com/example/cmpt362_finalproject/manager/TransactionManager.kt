@@ -1,7 +1,6 @@
 package com.example.cmpt362_finalproject.manager
 
 import com.example.cmpt362_finalproject.api.VisionRequest
-import com.example.cmpt362_finalproject.api.TextRequest
 import com.example.cmpt362_finalproject.api.TextService
 import com.example.cmpt362_finalproject.api.VisionService
 import com.example.cmpt362_finalproject.model.TransactionData
@@ -11,9 +10,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
-import java.util.Date
+import android.util.Log
 
 class TransactionManager @Inject constructor(
     private val purchaseRepository: PurchaseRepository,
@@ -24,9 +22,22 @@ class TransactionManager @Inject constructor(
     
     suspend fun processReceipt(imageBase64: String): Result<Entry> {
         return try {
+            Log.d("TransactionManager", "Making vision API call with image length: ${imageBase64.length}")
             val response = visionService.getVisionResponse(VisionRequest(imageBase64))
-            val transactionData = Json.decodeFromString<TransactionData>(response.output)
+            Log.d("TransactionManager", "Received response: ${response.output}")
             
+            if (response.output == null) {
+                return Result.failure(Exception("Received null response from server"))
+            }
+            
+            if (response.output.contains("error")) {
+                val errorJson = Json.decodeFromString<Map<String, Any>>(response.output)
+                val logs = (errorJson["logs"] as? List<*>)?.joinToString("\n")
+                Log.e("TransactionManager", "Server logs:\n$logs")
+                return Result.failure(Exception(errorJson["error"] as String))
+            }
+            
+            val transactionData = Json.decodeFromString<TransactionData>(response.output)
             val entry = Entry(
                 storeName = transactionData.merchant_name,
                 paid = (transactionData.total_amount * 100).toInt(), // Convert to cents
@@ -34,27 +45,10 @@ class TransactionManager @Inject constructor(
             )
             
             purchaseRepository.insert(entry)
-            checkForInsightGeneration()
-            
             Result.success(entry)
         } catch (e: Exception) {
+            Log.e("TransactionManager", "Error in processReceipt", e)
             Result.failure(e)
         }
-    }
-    
-    private suspend fun checkForInsightGeneration() {
-        val transactions = purchaseRepository.allPurchases.first()
-        if (transactions.size == 1 || transactions.size % 5 == 0) {
-            generateInsights()
-        }
-    }
-    
-    private suspend fun generateInsights() {
-        val transactions = purchaseRepository.allPurchases.first()
-        val transactionData = transactions.joinToString("\n") { 
-            "${it.storeName}: $${it.paid/100.0} on ${Date(it.dateTime * 1000)}"
-        }
-        
-        textService.getTextResponse(TextRequest("summary", transactionData))
     }
 }

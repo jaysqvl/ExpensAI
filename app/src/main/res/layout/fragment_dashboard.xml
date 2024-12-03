@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
@@ -9,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="0dp">
+        android:padding="16dp">
 
         <!-- Welcome Message -->
         <LinearLayout
@@ -45,7 +46,8 @@
                     android:text="Your Total Balance"
                     android:textColor="#B0B0B0"
                     android:textSize="14sp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    tools:ignore="HardcodedText" />
 
                 <!-- Total Balance Value -->
                 <TextView
@@ -165,30 +167,14 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Expenses Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expenses"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="8dp"
-            android:paddingLeft="10dp" />
-
-        <!-- Pie Chart -->
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginBottom="16dp" />
-
         <!-- Recent Transactions -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Recent Transactions"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp" />
 
         <!-- Transactions RecyclerView -->

@@ -7,17 +7,24 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cmpt362_finalproject.R
-import com.example.cmpt362_finalproject.data.Transaction
+import com.example.cmpt362_finalproject.manager.FirestoreManager
 import com.example.cmpt362_finalproject.ui.adapters.TransactionAdapter
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabaseDAO
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 
 class DashboardFragment : Fragment() {
 
-    private val dashboardViewModel: DashboardViewModel by viewModels()
+    private lateinit var database: PurchaseDatabase
+    private lateinit var databaseDao: PurchaseDatabaseDAO
+    private lateinit var repository: PurchaseRepository
+    private lateinit var viewModelFactory: DashboardViewModelFactory
+    private lateinit var dashboardViewModel: DashboardViewModel
 
     // Correct variable names for UI components
     private lateinit var totalBalanceTextView: TextView
@@ -33,6 +40,16 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+
+        // Initialize database components
+        database = PurchaseDatabase.getInstance(requireActivity())
+        databaseDao = database.commentDatabaseDao
+        repository = PurchaseRepository(databaseDao, FirestoreManager())
+        viewModelFactory = DashboardViewModelFactory(repository)
+        dashboardViewModel = ViewModelProvider(
+            requireActivity(),
+            viewModelFactory
+        )[DashboardViewModel::class.java]
 
         // Link the views to their IDs in the layout
         totalBalanceTextView = view.findViewById(R.id.totalBalanceValue)
@@ -81,8 +98,8 @@ class DashboardFragment : Fragment() {
         })
 
         // Observe and update the transactions list
-        dashboardViewModel.recentTransactions.observe(viewLifecycleOwner, Observer { transactions ->
-            transactionAdapter.updateData(transactions)
-        })
+        dashboardViewModel.allPurchasesLiveData.observe(viewLifecycleOwner) { entries ->
+            transactionAdapter.updateData(entries)
+        }
     }
 }
