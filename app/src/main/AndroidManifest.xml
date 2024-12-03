@@ -32,6 +32,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- AddBillActivity -->
+        <activity
+            android:name=".AddBillActivity"
+            android:exported="false"
+            android:label="@string/add_bill_activity_label" />
+
+        <!-- UpdateGoalChallengeActivity -->
+        <activity
+            android:name=".UpdateGoalChallengeActivity"
+            android:exported="false"
+            android:label="@string/update_goal_challenge_activity_label" />
     </application>
 
 </manifest>
