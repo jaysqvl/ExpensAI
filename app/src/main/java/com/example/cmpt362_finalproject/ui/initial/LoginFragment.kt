@@ -10,10 +10,8 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import androidx.fragment.app.Fragment
-import com.example.cmpt362_finalproject.InitialActivity
 import com.example.cmpt362_finalproject.MainActivity
 import com.example.cmpt362_finalproject.R
-import com.example.cmpt362_finalproject.ui.PreferenceFragment
 
 class LoginFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
