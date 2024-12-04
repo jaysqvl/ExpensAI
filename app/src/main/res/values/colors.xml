@@ -17,5 +17,6 @@
     <color name="card_shade">#E0E0E0</color> <!-- Slightly darker for the card background -->
     <color name="bill_tile_shade">#D6D6D6</color> <!-- Darker tile shade for better visibility -->
     <color name="error_red">#D32F2F</color> <!-- Error red remains as is -->
+    <color name="ic_launcher_background">@color/white</color>
 </resources>
 
