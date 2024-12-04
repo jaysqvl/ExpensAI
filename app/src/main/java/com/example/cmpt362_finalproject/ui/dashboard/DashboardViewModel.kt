@@ -53,11 +53,20 @@ class DashboardViewModel @Inject constructor(
     val monthlyProgressDetails: LiveData<String> = _monthlyProgressDetails
 
     init {
+        loadDashboardData()
+
         userPreferences.observeForever { preferences ->
-            _monthlyCredit.value = "$${String.format("%.2f", preferences.monthlyLimit)}"
-            _monthlyLimit.value = "$${String.format("%.2f", preferences.monthlyLimit)}"
-            updateTotalBalance()
-            updateMonthlyProgress()
+            preferences?.let {
+                _monthlyCredit.value = "$${String.format("%.2f", it.monthlyLimit)}"
+                _monthlyLimit.value = "$${String.format("%.2f", it.monthlyLimit)}"
+                updateTotalBalance()
+                updateMonthlyProgress()
+            } ?: run {
+                _monthlyCredit.value = "$0.00"
+                _monthlyLimit.value = "$0.00"
+                updateTotalBalance()
+                updateMonthlyProgress()
+            }
         }
         
         allPurchasesLiveData.observeForever { transactions ->
