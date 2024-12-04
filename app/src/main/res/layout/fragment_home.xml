@@ -88,10 +88,9 @@
                         android:layout_marginStart="8dp">
 
                         <TextView
-                            android:id="@+id/textViewWeeklySpendingHeader"
+                            android:id="@+id/textViewWeeklyTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Weekly Spending"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 

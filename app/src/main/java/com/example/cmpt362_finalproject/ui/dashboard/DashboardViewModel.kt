@@ -11,18 +11,22 @@ import com.example.cmpt362_finalproject.api.TextRequest
 import com.example.cmpt362_finalproject.data.UserPreferenceRepository
 import com.example.cmpt362_finalproject.ui.transactions.Entry
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
+import kotlinx.coroutines.Dispatchers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class DashboardViewModel @Inject constructor(
     purchaseRepository: PurchaseRepository,
     userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
 
+    private val locale = Locale.getDefault()
+    
     val allPurchasesLiveData = purchaseRepository.allPurchases.map { purchases ->
         purchases.sortedByDescending { it.dateTime }
     }.asLiveData()
@@ -57,8 +61,8 @@ class DashboardViewModel @Inject constructor(
 
         userPreferences.observeForever { preferences ->
             preferences?.let {
-                _monthlyCredit.value = "$${String.format("%.2f", it.monthlyLimit)}"
-                _monthlyLimit.value = "$${String.format("%.2f", it.monthlyLimit)}"
+                _monthlyCredit.value = "$${String.format(locale, "%.2f", it.monthlyLimit)}"
+                _monthlyLimit.value = "$${String.format(locale, "%.2f", it.monthlyLimit)}"
                 updateTotalBalance()
                 updateMonthlyProgress()
             } ?: run {
@@ -71,24 +75,30 @@ class DashboardViewModel @Inject constructor(
         
         allPurchasesLiveData.observeForever { transactions ->
             val totalSpent = transactions.sumOf { it.paid } / 100.0
-            _spend.value = "$${String.format("%.2f", totalSpent)}"
+            _spend.value = "$${String.format(locale, "%.2f", totalSpent)}"
             updateTotalBalance()
             updateMonthlyProgress()
         }
     }
 
     private fun updateMonthlyProgress() {
-        val spent = _spend.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
-        val limit = _monthlyLimit.value?.replace("$", "")?.toDoubleOrNull() ?: 1.0
-        _monthlyProgress.value = ((spent / limit) * 100).toInt().coerceIn(0, 100)
-        _monthlyProgressDetails.value = "${String.format("%.2f", spent)} / ${String.format("%.2f", limit)}"
+        viewModelScope.launch {
+            val spent = allPurchasesLiveData.value?.sumOf { it.paid } ?: 0
+            val spentDouble = spent / 100.0
+            val limit = userPreferences.value?.monthlyLimit ?: 1.0
+            
+            _monthlyProgress.value = ((spentDouble / limit) * 100).toInt().coerceIn(0, 100)
+            _monthlyProgressDetails.value = "${String.format(locale, "%.2f", spentDouble)} / ${String.format(locale, "%.2f", limit)}"
+            
+            _spend.value = "$${String.format(locale, "%.2f", spentDouble)}"
+        }
     }
 
     private fun updateTotalBalance() {
         val credit = _monthlyCredit.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
         val spent = _spend.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
         val balance = credit - spent
-        _totalBalance.value = "$${String.format("%.2f", balance)}"
+        _totalBalance.value = "$${String.format(locale, "%.2f", balance)}"
     }
 
     private fun loadDashboardData() {
@@ -121,25 +131,33 @@ class DashboardViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                val transactionText = transactions.joinToString("\n") { entry ->
-                    "Store: ${entry.storeName}, Amount: $${entry.paid / 100.0}, " +
-                    "Date: ${SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(entry.dateTime * 1000))}"
+                val transactionText = withContext(Dispatchers.Default) {
+                    transactions.joinToString("\n") { entry ->
+                        "Store: ${entry.storeName}, Amount: $${entry.paid / 100.0}, " +
+                        "Date: ${SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(entry.dateTime * 1000))}"
+                    }
                 }
 
-                val response = ApiClient.textService.getTextResponse(
-                    TextRequest("summary", transactionText)
-                )
+                val response = withContext(Dispatchers.IO) {
+                    ApiClient.textService.getTextResponse(
+                        TextRequest("summary", transactionText)
+                    )
+                }
                 
-                response.output.let { summary ->
-                    _summary.value = summary
-                    cachedSummary = summary
-                    _lastRefreshTime.value = System.currentTimeMillis()
+                withContext(Dispatchers.Main) {
+                    response.output.let { summary ->
+                        _summary.value = summary
+                        cachedSummary = summary
+                        _lastRefreshTime.value = System.currentTimeMillis()
+                    }
                 }
             } catch (e: Exception) {
-                Log.e("DashboardViewModel", "Error refreshing summary", e)
-                _summary.value = "Error generating summary. Please try again later."
+                withContext(Dispatchers.Main) {
+                    Log.e("DashboardViewModel", "Error refreshing summary", e)
+                    _summary.value = "Error generating summary. Please try again later."
+                }
             }
         }
     }

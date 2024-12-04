@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TransactionData(
     val merchant_name: String,
-    val items: List<ItemData>,
-    val tax: Double,
+    val items: List<ItemData>? = null,
+    val tax: Double? = null,
     val total_amount: Double
 )
 

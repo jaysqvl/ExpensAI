@@ -15,7 +15,11 @@ import com.example.cmpt362_finalproject.databinding.FragmentHomeBinding
 import com.example.cmpt362_finalproject.ui.adapters.UpcomingBillsAdapter
 import com.example.cmpt362_finalproject.data.UserPreferenceDatabase
 import com.example.cmpt362_finalproject.data.UserPreferenceRepository
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
+import com.example.cmpt362_finalproject.manager.FirestoreManager
 
+@Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -51,20 +55,44 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        val database = UserPreferenceDatabase.getInstance(requireContext())
-        val repository = UserPreferenceRepository(database.userPreferenceDao)
-        viewModel = ViewModelProvider(this, HomeViewModelFactory(repository))[HomeViewModel::class.java]
+        // Initialize database components
+        val database = PurchaseDatabase.getInstance(requireActivity())
+        val databaseDao = database.commentDatabaseDao
+        val purchaseRepository = PurchaseRepository(databaseDao, FirestoreManager())
         
+        val userPrefDatabase = UserPreferenceDatabase.getInstance(requireContext())
+        val userPrefRepository = UserPreferenceRepository(userPrefDatabase.userPreferenceDao)
+        
+        viewModel = ViewModelProvider(
+            this, 
+            HomeViewModelFactory(purchaseRepository, userPrefRepository)
+        )[HomeViewModel::class.java]
+        
+        // Set up observers
         viewModel.userPreferences.observe(viewLifecycleOwner) { preferences ->
             preferences?.let {
                 binding.welcomeMessage.text = "Welcome ${it.userName}"
                 binding.textViewSavingsGoal.text = "0 / $${it.savingsGoal}"
-                binding.textViewSpendingChallenge.text = "0 / $${it.spendingChallenge}"
             } ?: run {
                 binding.welcomeMessage.text = "Welcome"
                 binding.textViewSavingsGoal.text = "0 / $0.0"
-                binding.textViewSpendingChallenge.text = "0 / $0.0"
             }
+        }
+
+        viewModel.spendingChallengeProgress.observe(viewLifecycleOwner) { progress ->
+            binding.textViewSpendingChallenge.text = progress
+        }
+
+        viewModel.weeklySpending.observe(viewLifecycleOwner) { spending ->
+            binding.textViewWeeklySpending.text = spending
+        }
+
+        viewModel.weeklyDateRange.observe(viewLifecycleOwner) { dateRange ->
+            binding.textViewWeeklyTitle.text = dateRange
+        }
+
+        viewModel.dailySpending.observe(viewLifecycleOwner) { spending ->
+            binding.textViewDailySpending.text = spending
         }
     }
 

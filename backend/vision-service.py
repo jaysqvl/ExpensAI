@@ -14,26 +14,84 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 PROMPT = """
 You are an expert in processing receipt images. Analyze the image and extract the transaction details.
 
-You must respond with ONLY a JSON object in the following exact format:
+You must respond with ONLY a valid JSON object. Here are examples of valid responses:
+
+Example 1 (Full details with multiple items):
 {
-    "merchant_name": "store name",
+    "merchant_name": "Walmart Superstore",
     "items": [
         {
-            "name": "item name",
-            "quantity": number,
-            "price_per_unit": number,
-            "total_price": number
+            "name": "Milk 2%",
+            "quantity": 1,
+            "price_per_unit": 4.99,
+            "total_price": 4.99
+        },
+        {
+            "name": "Bread",
+            "quantity": 2,
+            "price_per_unit": 2.50,
+            "total_price": 5.00
+        },
+        {
+            "name": "Eggs Large",
+            "quantity": 1,
+            "price_per_unit": 3.99,
+            "total_price": 3.99
         }
     ],
-    "tax": number,
-    "total_amount": number
+    "tax": 1.50,
+    "total_amount": 15.48
 }
 
-Guidelines:
-- merchant_name must be the store name from the receipt
-- all numbers must be numeric values, not strings
-- do not include currency symbols
-- do not include any text outside the JSON
+Example 2 (Single item with tax):
+{
+    "merchant_name": "Starbucks",
+    "items": [
+        {
+            "name": "Grande Latte",
+            "quantity": 1,
+            "price_per_unit": 4.50,
+            "total_price": 4.50
+        }
+    ],
+    "tax": 0.49,
+    "total_amount": 4.99
+}
+
+Example 3 (Minimal details - only required fields):
+{
+    "merchant_name": "7-Eleven",
+    "total_amount": 2.99
+}
+
+Example 4 (No items but has tax):
+{
+    "merchant_name": "Gas Station",
+    "tax": 1.20,
+    "total_amount": 25.99
+}
+
+Critical Requirements:
+1. Response must be a single JSON object
+2. No text before or after the JSON
+3. Required fields:
+   - merchant_name (string)
+   - total_amount (number)
+4. Optional fields:
+   - items (array of items)
+   - tax (number)
+5. All numbers must be numeric values (not strings)
+6. No currency symbols in any values
+7. merchant_name must be the store name exactly as it appears on the receipt
+
+Common mistakes to avoid:
+- Don't add comments or explanations
+- Don't use string values for numbers
+- Don't include $ or other currency symbols
+- Don't add extra fields
+- Don't format numbers with commas (use 1000.00, not 1,000.00)
+
+Parse the receipt image and respond with ONLY the JSON object following these exact requirements.
 """
 
 @functions_framework.http
@@ -115,7 +173,7 @@ def vision_service(request):
                 }
             ],
             # For testing purposes this is a large window
-            max_tokens=1000
+            max_tokens=2000
         )
         result_text = response.choices[0].message.content
 
@@ -151,9 +209,10 @@ def validate_and_parse_json(response_text):
     import json
     try:
         parsed_json = json.loads(response_text)
-        # Ensure JSON has the expected structure
-        if "items" in parsed_json or "error" in parsed_json:
+        # Only check for required fields
+        required_fields = ["merchant_name", "total_amount"]
+        if all(field in parsed_json for field in required_fields):
             return parsed_json
-        return {"error": "Unexpected JSON format"}
+        return {"error": f"Missing required fields. Expected: {required_fields}"}
     except json.JSONDecodeError:
         return {"error": "Failed to parse JSON from AI response"}

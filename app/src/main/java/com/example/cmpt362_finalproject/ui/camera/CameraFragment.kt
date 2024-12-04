@@ -32,6 +32,10 @@ import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import com.example.cmpt362_finalproject.manager.FirestoreManager
 import com.example.cmpt362_finalproject.api.ApiClient
 import com.example.cmpt362_finalproject.manager.TransactionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import androidx.lifecycle.lifecycleScope
 
 // import textService
 
@@ -191,30 +195,40 @@ class CameraFragment : Fragment() {
     }
 
     private fun processImage(source: Any) {
-        try {
-            val bitmap = when (source) {
-                is Uri -> {
-                    Log.d("CameraFragment", "Processing URI image")
-                    val inputStream = requireContext().contentResolver.openInputStream(source)
-                    BitmapFactory.decodeStream(inputStream)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val bitmap = when (source) {
+                    is Uri -> {
+                        Log.d("CameraFragment", "Processing URI image")
+                        withContext(Dispatchers.IO) {
+                            val inputStream = requireContext().contentResolver.openInputStream(source)
+                            BitmapFactory.decodeStream(inputStream)
+                        }
+                    }
+                    is File -> {
+                        Log.d("CameraFragment", "Processing File image")
+                        withContext(Dispatchers.IO) {
+                            val bitmap = BitmapFactory.decodeFile(source.absolutePath)
+                            val matrix = Matrix()
+                            matrix.postRotate(90f)
+                            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                        }
+                    }
+                    else -> throw IllegalArgumentException("Unsupported image source")
                 }
-                is File -> {
-                    Log.d("CameraFragment", "Processing File image")
-                    val bitmap = BitmapFactory.decodeFile(source.absolutePath)
-                    val matrix = Matrix()
-                    matrix.postRotate(90f)
-                    Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-                }
-                else -> throw IllegalArgumentException("Unsupported image source")
-            }
 
-            currentBitmap = bitmap
-            receiptImageView.setImageBitmap(bitmap)
-            view?.findViewById<Button>(R.id.submitButton)?.isEnabled = true
-            Log.d("CameraFragment", "Image processed successfully")
-        } catch (e: Exception) {
-            Log.e("CameraFragment", "Error processing image", e)
-            Toast.makeText(requireContext(), "Error processing image", Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) {
+                    currentBitmap = bitmap
+                    receiptImageView.setImageBitmap(bitmap)
+                    view?.findViewById<Button>(R.id.submitButton)?.isEnabled = true
+                    Log.d("CameraFragment", "Image processed successfully")
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("CameraFragment", "Error processing image", e)
+                    Toast.makeText(requireContext(), "Error processing image", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.room.common)
@@ -70,14 +71,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.javax.inject)
     implementation(libs.mpandroidchart)
-//    implementation("androidx.credentials:credentials:1.2.2")
-//    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
-//    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-
-    // Room components
-    val room_version = "2.6.0"
-    val lifecycle_version = "2.6.2"
-    implementation(libs.androidx.room.ktx)
-    kapt("androidx.room:room-compiler:$room_version")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx: $lifecycle_version")
+    //    implementation("androidx.credentials:credentials:1.2.2")
+    //    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
+    //    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }

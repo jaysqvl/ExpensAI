@@ -1,15 +1,12 @@
 package com.example.cmpt362_finalproject.manager
 
-import com.example.cmpt362_finalproject.api.VisionRequest
-import com.example.cmpt362_finalproject.api.TextService
-import com.example.cmpt362_finalproject.api.VisionService
+import com.example.cmpt362_finalproject.api.*
 import com.example.cmpt362_finalproject.model.TransactionData
 import com.example.cmpt362_finalproject.ui.transactions.Entry
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
 import android.util.Log
-import com.example.cmpt362_finalproject.api.ErrorResponse
 
 @Suppress("SENSELESS_COMPARISON", "unused")
 class TransactionManager @Inject constructor(
@@ -31,8 +28,15 @@ class TransactionManager @Inject constructor(
                 Log.e("TransactionManager", "Error response body: $errorBody")
                 
                 val errorMessage = try {
-                    Json.decodeFromString<ErrorResponse>(errorBody ?: "").error
+                    val errorResponse = Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        prettyPrint = true
+                    }.decodeFromString<ErrorResponse>(errorBody ?: "{}")
+                    Log.d("TransactionManager", "Parsed error response: $errorResponse")
+                    errorResponse.output?.error ?: errorResponse.error ?: "Unknown error"
                 } catch (e: Exception) {
+                    Log.e("TransactionManager", "Error parsing error response", e)
                     "Server error: ${response.code()} - ${response.message()}"
                 }
                 
@@ -45,15 +49,28 @@ class TransactionManager @Inject constructor(
                 return Result.failure(Exception("Received null response from server"))
             }
             
-            val transactionData = Json.decodeFromString<TransactionData>(visionResponse.output)
-            val entry = Entry(
-                storeName = transactionData.merchant_name,
-                paid = (transactionData.total_amount * 100).toInt(), // Convert to cents
-                dateTime = System.currentTimeMillis() / 1000
-            )
-            
-            purchaseRepository.insert(entry)
-            Result.success(entry)
+            try {
+                Log.d("TransactionManager", "Attempting to parse response output: ${visionResponse.output}")
+                Log.d("TransactionManager", "Raw vision response: ${visionResponse.output}")
+                val transactionData = Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                }.decodeFromString<TransactionData>(visionResponse.output)
+                Log.d("TransactionManager", "Parsed TransactionData: $transactionData")
+                
+                val entry = Entry(
+                    storeName = transactionData.merchant_name,
+                    paid = (transactionData.total_amount * 100).toInt(),
+                    dateTime = System.currentTimeMillis() / 1000
+                )
+                Log.d("TransactionManager", "Created Entry: $entry")
+                
+                purchaseRepository.insert(entry)
+                Result.success(entry)
+            } catch (e: Exception) {
+                Log.e("TransactionManager", "Error parsing transaction data", e)
+                Result.failure(Exception("Failed to parse receipt data: ${e.message}"))
+            }
         } catch (e: Exception) {
             Log.e("TransactionManager", "Error in processReceipt", e)
             Result.failure(e)
