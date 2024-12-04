@@ -1,57 +1,52 @@
 package com.example.cmpt362_finalproject.ui.analytics
 
-import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.cmpt362_finalproject.R
-import com.example.cmpt362_finalproject.manager.FirestoreManager
-import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
-import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import androidx.lifecycle.ViewModelProvider
+import android.graphics.Color
+import com.example.cmpt362_finalproject.data.UserPreferenceDatabase
+import com.example.cmpt362_finalproject.data.UserPreferenceRepository
+import com.example.cmpt362_finalproject.manager.FirestoreManager
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
+import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import com.github.mikephil.charting.components.LimitLine
-import java.util.Calendar
 
-class AnalyticsFragment : Fragment() {
+class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
     private lateinit var viewModel: AnalyticsViewModel
-    private lateinit var lineChart: LineChart
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_analytics, container, false)
-    }
+    private lateinit var chart: LineChart
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        lineChart = view.findViewById(R.id.monthlySpendingChart)
+        chart = view.findViewById(R.id.monthlySpendingChart)
         setupChart()
         
         // Initialize database components
         val database = PurchaseDatabase.getInstance(requireActivity())
-        val repository = PurchaseRepository(database.commentDatabaseDao, FirestoreManager())
-        val viewModelFactory = AnalyticsViewModelFactory(repository)
+        val databaseDao = database.commentDatabaseDao
+        val repository = PurchaseRepository(databaseDao, FirestoreManager())
+        val userPrefDatabase = UserPreferenceDatabase.getInstance(requireActivity())
+        val userPrefRepository = UserPreferenceRepository(userPrefDatabase.userPreferenceDao)
         
+        // Create ViewModel using factory
+        val viewModelFactory = AnalyticsViewModelFactory(repository, userPrefRepository)
         viewModel = ViewModelProvider(this, viewModelFactory)[AnalyticsViewModel::class.java]
         
-        viewModel.allPurchasesLiveData.observe(viewLifecycleOwner) {
-            updateChart()
+        viewModel.spendingData.observe(viewLifecycleOwner) { (dailySpending, monthlyLimit) ->
+            updateChartData(dailySpending, monthlyLimit)
         }
     }
 
     private fun setupChart() {
-        lineChart.apply {
+        chart.apply {
             description.isEnabled = false
             setTouchEnabled(true)
             isDragEnabled = true
@@ -60,61 +55,71 @@ class AnalyticsFragment : Fragment() {
             
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
-                setDrawGridLines(false)
+                setDrawGridLines(true)
                 granularity = 1f
-                // Set the minimum and maximum values for the X-axis
-                val calendar = Calendar.getInstance()
-                val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
                 axisMinimum = 1f
-                axisMaximum = daysInMonth.toFloat()
+                axisMaximum = 31f  // Show all days of the month
                 valueFormatter = object : ValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
                         return value.toInt().toString()
                     }
                 }
             }
-            
+
             axisLeft.apply {
                 setDrawGridLines(true)
-                valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        return "$${value}"
-                    }
-                }
+                setDrawZeroLine(true)
+                axisMinimum = 0f  // Start from 0
+                spaceTop = 15f    // Add 15% space on top for better visibility
             }
-            
-            axisRight.isEnabled = false
-            legend.isEnabled = true
 
-            // Add limit line
-            val limitLine = LimitLine(1000f, "Monthly Limit").apply {
-                lineWidth = 2f
-                lineColor = Color.RED
-                textColor = Color.RED
+            axisRight.isEnabled = false
+            legend.apply {
+                isEnabled = true
                 textSize = 12f
+                formSize = 12f
             }
-            axisLeft.addLimitLine(limitLine)
+
+            extraBottomOffset = 10f  // Add space at the bottom
+            extraLeftOffset = 10f    // Add space on the left
         }
     }
 
-    private fun updateChart() {
-        val calendar = Calendar.getInstance()
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val dailySpending = viewModel.getDailySpending()
-        
-        val entries = (1..daysInMonth).map { day ->
-            Entry(day.toFloat(), dailySpending[day]?.toFloat() ?: 0f)
-        }
+    private fun updateChartData(dailySpending: Map<Int, Double>, monthlyLimit: Double) {
+        val entries = dailySpending.map { (day, amount) ->
+            Entry(day.toFloat(), amount.toFloat())
+        }.sortedBy { it.x }
 
         val dataSet = LineDataSet(entries, "Daily Spending").apply {
             color = Color.BLUE
             setCircleColor(Color.BLUE)
-            lineWidth = 2f
-            circleRadius = 4f
-            setDrawValues(false)
+            lineWidth = 3f
+            circleRadius = 6f
+            setDrawValues(true)
+            valueTextSize = 10f
+            mode = LineDataSet.Mode.LINEAR  // Connect points with straight lines
+            setDrawFilled(true)
+            fillColor = Color.BLUE
+            fillAlpha = 30
         }
 
-        lineChart.data = LineData(dataSet)
-        lineChart.invalidate()
+        // Add monthly limit line
+        val limitLine = LimitLine(monthlyLimit.toFloat(), "Monthly Limit").apply {
+            lineWidth = 3f
+            lineColor = Color.RED
+            enableDashedLine(10f, 10f, 0f)
+            labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+            textSize = 12f
+            textColor = Color.RED
+        }
+
+        chart.axisLeft.apply {
+            removeAllLimitLines()
+            addLimitLine(limitLine)
+            axisMaximum = monthlyLimit.toFloat() * 1.2f  // Set max to 120% of limit
+        }
+
+        chart.data = LineData(dataSet)
+        chart.invalidate()
     }
 } 

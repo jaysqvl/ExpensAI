@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cmpt362_finalproject.api.ApiClient
 import com.example.cmpt362_finalproject.api.TextRequest
+import com.example.cmpt362_finalproject.data.UserPreferenceRepository
 import com.example.cmpt362_finalproject.ui.transactions.Entry
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import java.text.SimpleDateFormat
@@ -17,16 +18,18 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 class DashboardViewModel @Inject constructor(
-    purchaseRepository: PurchaseRepository
+    purchaseRepository: PurchaseRepository,
+    userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
 
-    val allPurchasesLiveData: LiveData<List<Entry>> = purchaseRepository.allPurchases.asLiveData()
+    val allPurchasesLiveData = purchaseRepository.allPurchases.asLiveData()
+    private val userPreferences = userPreferenceRepository.userPreferences.asLiveData()
 
     private val _totalBalance = MutableLiveData<String>()
     val totalBalance: LiveData<String> = _totalBalance
 
-    private val _income = MutableLiveData<String>()
-    val income: LiveData<String> = _income
+    private val _monthlyCredit = MutableLiveData<String>()
+    val monthlyCredit: LiveData<String> = _monthlyCredit
 
     private val _spend = MutableLiveData<String>()
     val spend: LiveData<String> = _spend
@@ -43,26 +46,44 @@ class DashboardViewModel @Inject constructor(
     private val _lastRefreshTime = MutableLiveData<Long>()
     private var cachedSummary: String? = null
 
+    private val _monthlyProgressDetails = MutableLiveData<String>()
+    val monthlyProgressDetails: LiveData<String> = _monthlyProgressDetails
+
     init {
-        loadDashboardData()
-        checkAndRefreshSummary()
+        userPreferences.observeForever { preferences ->
+            _monthlyCredit.value = "$${String.format("%.2f", preferences.monthlyLimit)}"
+            _monthlyLimit.value = "$${String.format("%.2f", preferences.monthlyLimit)}"
+            updateTotalBalance()
+            updateMonthlyProgress()
+        }
         
-        // Observe transactions for updates
         allPurchasesLiveData.observeForever { transactions ->
             val totalSpent = transactions.sumOf { it.paid } / 100.0
             _spend.value = "$${String.format("%.2f", totalSpent)}"
-            
-            val monthlyCredits = _income.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
-            val balance = monthlyCredits - totalSpent
-            _totalBalance.value = "$${String.format("%.2f", balance)}"
+            updateTotalBalance()
+            updateMonthlyProgress()
         }
+    }
+
+    private fun updateMonthlyProgress() {
+        val spent = _spend.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
+        val limit = _monthlyLimit.value?.replace("$", "")?.toDoubleOrNull() ?: 1.0
+        _monthlyProgress.value = ((spent / limit) * 100).toInt().coerceIn(0, 100)
+        _monthlyProgressDetails.value = "${String.format("%.2f", spent)} / ${String.format("%.2f", limit)}"
+    }
+
+    private fun updateTotalBalance() {
+        val credit = _monthlyCredit.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
+        val spent = _spend.value?.replace("$", "")?.toDoubleOrNull() ?: 0.0
+        val balance = credit - spent
+        _totalBalance.value = "$${String.format("%.2f", balance)}"
     }
 
     private fun loadDashboardData() {
         _totalBalance.value = "$0.00"
-        _income.value = "$0.00"
+        _monthlyCredit.value = "$0.00"
         _spend.value = "$0.00"
-        _monthlyLimit.value = "$1000.00"
+        _monthlyLimit.value = "$0.00"
         _monthlyProgress.value = 0
     }
 

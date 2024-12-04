@@ -38,6 +38,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:baselineAligned="false"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -265,7 +266,7 @@
                         android:src="@drawable/ic_add"
                         android:contentDescription="Add New Bill"
                         android:elevation="6dp"
-                        android:tint="@android:color/white" />
+                        app:tint="@android:color/white" />
                 </RelativeLayout>
 
                 <!-- Bills RecyclerView -->
@@ -277,6 +278,17 @@
                     android:scrollbars="vertical" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/welcomeMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Welcome"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"/>
 
     </LinearLayout>
 </ScrollView>

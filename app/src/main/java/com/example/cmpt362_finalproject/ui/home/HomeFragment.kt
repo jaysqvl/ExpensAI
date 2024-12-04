@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cmpt362_finalproject.AddBillActivity
-import com.example.cmpt362_finalproject.UpdateGoalChallengeActivity
 import com.example.cmpt362_finalproject.data.BillModel
 import com.example.cmpt362_finalproject.databinding.FragmentHomeBinding
 import com.example.cmpt362_finalproject.ui.adapters.UpcomingBillsAdapter
+import com.example.cmpt362_finalproject.data.UserPreferenceDatabase
+import com.example.cmpt362_finalproject.data.UserPreferenceRepository
 
 class HomeFragment : Fragment() {
 
@@ -20,11 +22,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var billsAdapter: UpcomingBillsAdapter
-    private val billsList = mutableListOf<BillModel>() // Manage bills here
-
-    // Variables for storing goal and challenge values
-    private var savingsGoal: String = "0.0" // Default value
-    private var spendingChallenge: String = "0.0" // Default value
+    private lateinit var viewModel: HomeViewModel
+    private val billsList = mutableListOf<BillModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,18 +45,27 @@ class HomeFragment : Fragment() {
             startActivityForResult(intent, REQUEST_CODE_ADD_BILL)
         }
 
-        // Update goal and challenge when "Update Goals & Challenges" button is clicked
-        binding.buttonUpdateGoalChallenge.setOnClickListener {
-            val intent = Intent(requireContext(), UpdateGoalChallengeActivity::class.java)
-            intent.putExtra("current_savings_goal", savingsGoal)
-            intent.putExtra("current_spending_challenge", spendingChallenge)
-            startActivityForResult(intent, REQUEST_CODE_UPDATE_GOAL_CHALLENGE)
-        }
-
-        // Update UI with initial values for goal and challenge
-        updateGoalChallengeUI()
-
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        val database = UserPreferenceDatabase.getInstance(requireContext())
+        val repository = UserPreferenceRepository(database.userPreferenceDao)
+        viewModel = ViewModelProvider(this, HomeViewModelFactory(repository))[HomeViewModel::class.java]
+        
+        viewModel.userPreferences.observe(viewLifecycleOwner) { preferences ->
+            preferences?.let {
+                binding.welcomeMessage.text = "Welcome ${it.userName}"
+                binding.textViewSavingsGoal.text = "0 / $${it.savingsGoal}"
+                binding.textViewSpendingChallenge.text = "0 / $${it.spendingChallenge}"
+            } ?: run {
+                binding.welcomeMessage.text = "Welcome"
+                binding.textViewSavingsGoal.text = "0 / $0.0"
+                binding.textViewSpendingChallenge.text = "0 / $0.0"
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -65,25 +73,14 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    // Handle results from AddBillActivity and UpdateGoalChallengeActivity
+    // Handle results from AddBillActivity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_CODE_ADD_BILL -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val name = data?.getStringExtra("bill_name") ?: return
-                    val dueDate = data.getStringExtra("due_date") ?: return
-                    val amount = data.getStringExtra("amount") ?: return
-                    addBill(BillModel(name, dueDate, amount)) // Add new bill
-                }
-            }
-            REQUEST_CODE_UPDATE_GOAL_CHALLENGE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val newSavingsGoal = data?.getStringExtra("new_savings_goal") ?: return
-                    val newSpendingChallenge = data.getStringExtra("new_spending_challenge") ?: return
-                    updateGoalChallenge(newSavingsGoal, newSpendingChallenge) // Update goal and challenge values
-                }
-            }
+        if (requestCode == REQUEST_CODE_ADD_BILL && resultCode == Activity.RESULT_OK) {
+            val name = data?.getStringExtra("bill_name") ?: return
+            val dueDate = data.getStringExtra("due_date") ?: return
+            val amount = data.getStringExtra("amount") ?: return
+            addBill(BillModel(name, dueDate, amount)) // Add new bill
         }
     }
 
@@ -99,21 +96,7 @@ class HomeFragment : Fragment() {
         billsAdapter.notifyItemRemoved(position)
     }
 
-    // Update goal and challenge values and UI
-    private fun updateGoalChallenge(newSavingsGoal: String, newSpendingChallenge: String) {
-        savingsGoal = newSavingsGoal
-        spendingChallenge = newSpendingChallenge
-        updateGoalChallengeUI()
-    }
-
-    // Update the UI to display current goal and challenge values
-    private fun updateGoalChallengeUI() {
-        binding.textViewSavingsGoal.text = "0 / $savingsGoal"
-        binding.textViewSpendingChallenge.text = "0 / $spendingChallenge"
-    }
-
     companion object {
         private const val REQUEST_CODE_ADD_BILL = 1
-        private const val REQUEST_CODE_UPDATE_GOAL_CHALLENGE = 2
     }
 }

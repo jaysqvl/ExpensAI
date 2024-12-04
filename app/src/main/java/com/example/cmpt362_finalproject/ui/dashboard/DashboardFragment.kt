@@ -18,6 +18,8 @@ import com.example.cmpt362_finalproject.ui.adapters.TransactionAdapter
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabaseDAO
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
+import com.example.cmpt362_finalproject.data.UserPreferenceDatabase
+import com.example.cmpt362_finalproject.data.UserPreferenceRepository
 
 class DashboardFragment : Fragment() {
 
@@ -29,13 +31,14 @@ class DashboardFragment : Fragment() {
 
     // Correct variable names for UI components
     private lateinit var totalBalanceTextView: TextView
-    private lateinit var incomeTextView: TextView
+    private lateinit var monthlyCreditTextView: TextView
     private lateinit var spendTextView: TextView
     private lateinit var monthlyLimitTextView: TextView
     private lateinit var monthlyProgressBar: ProgressBar
     private lateinit var transactionsRecyclerView: RecyclerView
     private lateinit var transactionAdapter: TransactionAdapter
     private lateinit var summaryTextView: TextView
+    private lateinit var monthlyProgressDetailsTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +50,9 @@ class DashboardFragment : Fragment() {
         database = PurchaseDatabase.getInstance(requireActivity())
         databaseDao = database.commentDatabaseDao
         repository = PurchaseRepository(databaseDao, FirestoreManager())
-        viewModelFactory = DashboardViewModelFactory(repository)
+        val userPrefDatabase = UserPreferenceDatabase.getInstance(requireActivity())
+        val userPrefRepository = UserPreferenceRepository(userPrefDatabase.userPreferenceDao)
+        viewModelFactory = DashboardViewModelFactory(repository, userPrefRepository)
         dashboardViewModel = ViewModelProvider(
             requireActivity(),
             viewModelFactory
@@ -55,13 +60,14 @@ class DashboardFragment : Fragment() {
 
         // Link the views to their IDs in the layout
         totalBalanceTextView = view.findViewById(R.id.totalBalanceValue)
-        incomeTextView = view.findViewById(R.id.incomeValue)
+        monthlyCreditTextView = view.findViewById(R.id.monthlyCreditValue)
         spendTextView = view.findViewById(R.id.spendValue)
         monthlyLimitTextView = view.findViewById(R.id.monthlyLimitValue)
         monthlyProgressBar = view.findViewById(R.id.monthlyProgress)
         transactionsRecyclerView = view.findViewById(R.id.recyclerViewTransactions)
         val refreshSummaryButton = view.findViewById<ImageButton>(R.id.refreshSummaryButton)
         summaryTextView = view.findViewById(R.id.summaryTextView)
+        monthlyProgressDetailsTextView = view.findViewById(R.id.monthlyProgressDetails)
 
         setupRecyclerView()
         observeViewModel()
@@ -87,10 +93,10 @@ class DashboardFragment : Fragment() {
             totalBalanceTextView.text = balance
         })
 
-        // Observe and update the income
-        dashboardViewModel.income.observe(viewLifecycleOwner, Observer { income ->
-            incomeTextView.text = income
-        })
+        // Observe and update the monthly credit
+        dashboardViewModel.monthlyCredit.observe(viewLifecycleOwner) { credit ->
+            monthlyCreditTextView.text = credit
+        }
 
         // Observe and update the spend
         dashboardViewModel.spend.observe(viewLifecycleOwner, Observer { spend ->
@@ -115,6 +121,11 @@ class DashboardFragment : Fragment() {
         // Observe and update the summary
         dashboardViewModel.summary.observe(viewLifecycleOwner) { summary ->
             summaryTextView.text = summary
+        }
+
+        // Observe and update the monthly progress details
+        dashboardViewModel.monthlyProgressDetails.observe(viewLifecycleOwner) { details ->
+            monthlyProgressDetailsTextView.text = details
         }
     }
 }
