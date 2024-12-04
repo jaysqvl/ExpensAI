@@ -192,13 +192,22 @@
                         android:contentDescription="Refresh summary"/>
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/summaryTextView"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textSize="14sp"
-                    android:text="Tap refresh to generate summary"/>
+                    android:layout_height="100dp"
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false"
+                    android:nestedScrollingEnabled="true">
+
+                    <TextView
+                        android:id="@+id/summaryTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="14sp"
+                        android:text="Tap refresh to generate summary"/>
+
+                </ScrollView>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
