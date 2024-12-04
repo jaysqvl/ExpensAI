@@ -208,8 +208,8 @@ class CameraFragment : Fragment() {
     }
 
     private fun compressBitmap(original: Bitmap): Bitmap {
-        // Calculate new dimensions while maintaining aspect ratio
-        val maxDimension = 800
+        // Start with larger dimensions to maintain quality
+        val maxDimension = 1200
         val ratio = Math.min(
             maxDimension.toFloat() / original.width,
             maxDimension.toFloat() / original.height
@@ -218,18 +218,27 @@ class CameraFragment : Fragment() {
         val width = (ratio * original.width).toInt()
         val height = (ratio * original.height).toInt()
 
-        val compressed = Bitmap.createScaledBitmap(original, width, height, true)
-        
-        // Display the image in the ImageView
-        receiptImageView.setImageBitmap(compressed)
-        
-        return compressed
+        return Bitmap.createScaledBitmap(original, width, height, true)
     }
 
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+        var quality = 100
+        var base64String: String
+        
+        do {
+            byteArrayOutputStream.reset() // Clear the stream
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+            base64String = Base64.encodeToString(byteArray, Base64.NO_WRAP)
+            quality -= 10 // Reduce quality by 10% each iteration
+        } while (base64String.length > MAX_BASE64_SIZE && quality > 10)
+
+        Log.d("CameraFragment", "Final image quality: $quality%, Size: ${base64String.length} chars")
+        return base64String
+    }
+
+    companion object {
+        private const val MAX_BASE64_SIZE = 6800000 // ~5MB in base64 (5MB * 4/3)
     }
 }
