@@ -12,23 +12,23 @@ MAX_INSIGHT_TOKENS = 250
 
 # Modified prompt for summary endpoint
 SUMMARY_PROMPT = """
-You are a financial advisor analyzing transaction data. Create a clear, concise summary of the following transactions.
+You are a financial advisor analyzing transaction data. Create a clear, concise summary of the following transactions in plain text (no markdown, bullet points, or special formatting).
 Focus on:
 1. Total spending and number of transactions
 2. Main spending categories and their totals
 3. Notable patterns or trends
 4. Actionable recommendations for saving money
 
-Keep your response natural and conversational, but professional.
+Keep your response natural, conversational, and professional. Do not use any special characters, formatting, or symbols - just plain text paragraphs.
 """
 
 INSIGHT_PROMPT = """
-Analyze the following transaction data and generate actionable insights. Consider:
+Analyze the following transaction data and generate actionable insights in plain text (no markdown, bullet points, or special formatting). Consider:
 1. Spending patterns and trends
 2. Unusual expenses or behaviors
 3. Specific recommendations for optimization
 
-Keep your response natural and conversational, but professional.
+Keep your response natural, conversational, and professional. Do not use any special characters, formatting, or symbols - just plain text paragraphs.
 """
 
 @functions_framework.http
