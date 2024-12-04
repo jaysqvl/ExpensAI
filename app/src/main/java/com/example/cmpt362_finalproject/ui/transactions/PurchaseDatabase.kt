@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
-@Database(entities = [Entry::class], version = 1)
+@Database(entities = [Entry::class], version = 1, exportSchema = false)
 abstract class PurchaseDatabase: RoomDatabase() {
 
     abstract val commentDatabaseDao: PurchaseDatabaseDAO //Every database has a DAO

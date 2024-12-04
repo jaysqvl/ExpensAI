@@ -50,13 +50,10 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.preference.ktx)
@@ -74,4 +71,11 @@ dependencies {
     //    implementation("androidx.credentials:credentials:1.2.2")
     //    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
     //    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    // Room components
+    // Room components
+    val roomVersion = "2.6.1"
+    implementation(libs.androidx.room.ktx)
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
 }
