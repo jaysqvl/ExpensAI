@@ -16,26 +16,57 @@
         android:id="@+id/saving_preferences_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/preferences_prompt"
-        app:layout_constraintStart_toStartOf="parent">
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/preferences_prompt">
 
         <RadioButton
             android:id="@+id/preference_aggressive"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Aggressive (Maximize savings to reach your goal as fast as possible.)" />
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginBottom="16dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Aggressive\nMonthly Limit: $2,000\nSavings Goal: $5,000\nSpending Challenge: $1,500\n(Maximize savings to reach your goal as fast as possible.)"
+            android:textSize="16sp"/>
 
         <RadioButton
             android:id="@+id/preference_normal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Normal (Save moderately, aiming for 10% of your goal per milestone.)" />
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginBottom="16dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Normal\nMonthly Limit: $1,500\nSavings Goal: $3,000\nSpending Challenge: $1,000\n(Save moderately, aiming for steady progress.)"
+            android:textSize="16sp"/>
 
         <RadioButton
             android:id="@+id/preference_minimum"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Minimum (Focus on meeting your goal with the least amount of savings pressure.)" />
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginBottom="24dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Minimum\nMonthly Limit: $1,000\nSavings Goal: $1,000\nSpending Challenge: $500\n(Focus on meeting your goal with minimal savings pressure.)"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Note: These values can be customized anytime in the Settings."
+            android:textStyle="italic"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            android:gravity="center"/>
+
     </RadioGroup>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

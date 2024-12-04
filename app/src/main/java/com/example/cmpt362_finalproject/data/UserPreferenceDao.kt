@@ -11,6 +11,9 @@ interface UserPreferenceDao {
     @Query("SELECT * FROM user_preferences WHERE id = 1")
     fun getUserPreferences(): Flow<UserPreference>
 
+    @Query("SELECT * FROM user_preferences WHERE id = 1")
+    suspend fun getUserPreferencesSync(): UserPreference?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updatePreferences(preferences: UserPreference)
 

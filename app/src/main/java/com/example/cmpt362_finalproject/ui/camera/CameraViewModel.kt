@@ -2,20 +2,20 @@ package com.example.cmpt362_finalproject.ui.camera
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cmpt362_finalproject.manager.TransactionManager
+import com.example.cmpt362_finalproject.util.SingleLiveEvent
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CameraViewModel @Inject constructor(
     private val transactionManager: TransactionManager
 ) : ViewModel() {
-    private val _apiResponse = MutableLiveData<String>()
+    private val _apiResponse = SingleLiveEvent<String>()
     val apiResponse: LiveData<String> = _apiResponse
 
-    private val _error = MutableLiveData<String>()
+    private val _error = SingleLiveEvent<String>()
     val error: LiveData<String> = _error
 
     fun processReceipt(base64Image: String) {

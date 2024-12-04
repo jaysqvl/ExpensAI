@@ -12,6 +12,14 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <TextView
+            android:id="@+id/welcomeMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textSize="24sp"
+            android:text="Welcome" />
+
         <!-- Quick Overview Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -193,37 +201,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Recent Activity Section -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/card_shade">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recent Activity"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:paddingBottom="8dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewRecentActivity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="vertical" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
         <!-- Upcoming Bills Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -278,17 +255,5 @@
                     android:scrollbars="vertical" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/welcomeMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Welcome"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary"/>
-
     </LinearLayout>
 </ScrollView>

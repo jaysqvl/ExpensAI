@@ -16,13 +16,16 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 class DashboardViewModel @Inject constructor(
     purchaseRepository: PurchaseRepository,
     userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
 
-    val allPurchasesLiveData = purchaseRepository.allPurchases.asLiveData()
+    val allPurchasesLiveData = purchaseRepository.allPurchases.map { purchases ->
+        purchases.sortedByDescending { it.dateTime }
+    }.asLiveData()
     private val userPreferences = userPreferenceRepository.userPreferences.asLiveData()
 
     private val _totalBalance = MutableLiveData<String>()

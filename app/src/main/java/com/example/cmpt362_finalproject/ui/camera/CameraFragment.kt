@@ -1,6 +1,7 @@
 package com.example.cmpt362_finalproject.ui.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -70,6 +71,7 @@ class CameraFragment : Fragment() {
         }
     }
 
+    @SuppressLint("CutPasteId")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_camera, container, false)
         
@@ -99,15 +101,20 @@ class CameraFragment : Fragment() {
 
         submitButton.setOnClickListener {
             Log.d("CameraFragment", "Submit button clicked")
+            submitButton.isEnabled = false  // Disable immediately after click
+            
             currentBitmap?.let { bitmap ->
                 Log.d("CameraFragment", "Processing bitmap")
                 val compressedBitmap = compressBitmap(bitmap)
                 val base64Image = bitmapToBase64(compressedBitmap)
                 Log.d("CameraFragment", "Base64 string length: ${base64Image.length}")
                 viewModel.processReceipt(base64Image)
+                currentBitmap = null  // Clear the current bitmap
+                receiptImageView.setImageResource(R.drawable.placeholder)  // Reset image view
             } ?: run {
                 Log.e("CameraFragment", "No image selected")
                 Toast.makeText(requireContext(), "Please select or capture an image first", Toast.LENGTH_SHORT).show()
+                submitButton.isEnabled = true  // Re-enable only if no image was selected
             }
         }
 
@@ -115,11 +122,15 @@ class CameraFragment : Fragment() {
         viewModel.apiResponse.observe(viewLifecycleOwner) { response ->
             Log.d("CameraFragment", "API Response received: $response")
             Toast.makeText(requireContext(), "Receipt processed: $response", Toast.LENGTH_LONG).show()
+            currentBitmap = null  // Clear the current image
+            receiptImageView.setImageResource(R.drawable.placeholder)  // Reset to placeholder
+            view?.findViewById<Button>(R.id.submitButton)?.isEnabled = false  // Keep disabled after success
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
             Log.e("CameraFragment", "API Error: $error")
             Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+            view?.findViewById<Button>(R.id.submitButton)?.isEnabled = true  // Re-enable on error
         }
         
         return view

@@ -54,7 +54,11 @@ def vision_service(request):
     # Ensure the request method is POST
     if request.method != 'POST':
         logs.append(f"Invalid method: {request.method}")
-        return jsonify({'error': 'Only POST method is supported', 'logs': logs}), 405
+        return jsonify({
+            'error': 'Only POST method is supported',
+            'details': f'Received {request.method} request',
+            'logs': logs
+        }), 405
 
     # Parse the request JSON
     request_json = request.get_json(silent=True)
@@ -62,7 +66,11 @@ def vision_service(request):
     
     if not request_json or 'image_data' not in request_json:
         logs.append("Missing image_data in request")
-        return jsonify({'error': 'Missing required field: image_data', 'logs': logs}), 400
+        return jsonify({
+            'error': 'Missing required field: image_data',
+            'details': 'Request must include image_data field with base64 encoded image',
+            'logs': logs
+        }), 400
 
     # Extract the Base64-encoded image data
     base64_image = request_json['image_data']
@@ -71,12 +79,21 @@ def vision_service(request):
     # Validate Base64 input
     if not is_valid_base64(base64_image):
         logs.append("Invalid base64 data")
-        return jsonify({'error': 'Invalid Base64-encoded image data', 'logs': logs}), 400
+        return jsonify({
+            'error': 'Invalid Base64-encoded image data',
+            'details': 'The provided string is not valid base64 encoded data',
+            'logs': logs
+        }), 400
 
     # Ensure the image size is within limits
     if len(base64_image) > MAX_IMAGE_SIZE:
-        logs.append(f"Image too large: {len(base64_image)} bytes")
-        return jsonify({'error': 'Image size exceeds maximum limit of 5 MB', 'logs': logs}), 400
+        image_size_mb = len(base64_image) / (1024 * 1024)
+        logs.append(f"Image too large: {image_size_mb:.2f}MB")
+        return jsonify({
+            'error': 'Image size exceeds maximum limit',
+            'details': f'Image size: {image_size_mb:.2f}MB (max: 5MB)',
+            'logs': logs
+        }), 400
 
     try:
         logs.append("Sending request to OpenAI")
@@ -117,9 +134,14 @@ def vision_service(request):
         return jsonify({'output': {'error': str(e), 'logs': logs}}), 500
 
 # Helper: Validate Base64 input
-def is_valid_base64(base64_string):
+def is_valid_base64(base64_str):
     try:
-        base64.b64decode(base64_string)
+        # Check if string is properly padded
+        if len(base64_str) % 4:
+            return False
+            
+        # Try to decode the string
+        base64.b64decode(base64_str)
         return True
     except Exception:
         return False
