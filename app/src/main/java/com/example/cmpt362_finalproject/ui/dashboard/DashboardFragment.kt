@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -34,6 +35,7 @@ class DashboardFragment : Fragment() {
     private lateinit var monthlyProgressBar: ProgressBar
     private lateinit var transactionsRecyclerView: RecyclerView
     private lateinit var transactionAdapter: TransactionAdapter
+    private lateinit var summaryTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,9 +60,17 @@ class DashboardFragment : Fragment() {
         monthlyLimitTextView = view.findViewById(R.id.monthlyLimitValue)
         monthlyProgressBar = view.findViewById(R.id.monthlyProgress)
         transactionsRecyclerView = view.findViewById(R.id.recyclerViewTransactions)
+        val refreshSummaryButton = view.findViewById<ImageButton>(R.id.refreshSummaryButton)
+        summaryTextView = view.findViewById(R.id.summaryTextView)
 
         setupRecyclerView()
         observeViewModel()
+
+        refreshSummaryButton.setOnClickListener {
+            dashboardViewModel.allPurchasesLiveData.value?.let { transactions ->
+                dashboardViewModel.refreshSummary(transactions)
+            }
+        }
 
         return view
     }
@@ -100,6 +110,11 @@ class DashboardFragment : Fragment() {
         // Observe and update the transactions list
         dashboardViewModel.allPurchasesLiveData.observe(viewLifecycleOwner) { entries ->
             transactionAdapter.updateData(entries)
+        }
+
+        // Observe and update the summary
+        dashboardViewModel.summary.observe(viewLifecycleOwner) { summary ->
+            summaryTextView.text = summary
         }
     }
 }

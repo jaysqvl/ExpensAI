@@ -1,3 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path name="/storage/emulated/0" path="." />
-</paths>
+    <!-- Universal external storage access -->
+    <external-path name="external" path="." />
+    
+    <!-- App-specific external files -->
+    <external-files-path name="my_images" path="/" />
+</paths> 

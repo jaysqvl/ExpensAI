@@ -6,13 +6,18 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_camera"
-        android:title="@string/title_camera" />
-
-    <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_dashboard" />
+
+    <item
+        android:id="@+id/navigation_camera"
+        android:icon="@drawable/ic_camera"
+        android:title="Camera" />
+
+    <item
+        android:id="@+id/navigation_analytics"
+        android:icon="@drawable/ic_analytics_24"
+        android:title="Analytics" />
 
 </menu>
