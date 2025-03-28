@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation("com.google.android.material:material:1.10.0")
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -58,6 +58,14 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.activity)
+    
+    // CameraX dependencies
+    val cameraxVersion = "1.3.0"
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

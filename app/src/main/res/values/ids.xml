@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preference Fragment IDs -->
+    <item name="saving_preferences_group" type="id" />
+    <item name="preference_aggressive" type="id" />
+    <item name="preference_normal" type="id" />
+    <item name="preference_minimum" type="id" />
+    <item name="confirm_preferences_fab" type="id" />
+</resources> 

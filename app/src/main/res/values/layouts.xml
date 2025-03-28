@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- No layout references needed here as layout files are automatically registered as resources -->
+</resources> 

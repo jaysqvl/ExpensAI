@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.cmpt362_finalproject.MainActivity
 import com.example.cmpt362_finalproject.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 class CategoriesFragment : Fragment() {
 
@@ -51,7 +51,7 @@ class CategoriesFragment : Fragment() {
             categoriesContainer.addView(checkBox)
         }
 
-        val floatingButton: FloatingActionButton = rootView.findViewById(R.id.floating_button)
+        val floatingButton: ExtendedFloatingActionButton = rootView.findViewById(R.id.floating_button)
         floatingButton.setOnClickListener {
             if (selectedCategories.isNotEmpty()) {
                 Toast.makeText(

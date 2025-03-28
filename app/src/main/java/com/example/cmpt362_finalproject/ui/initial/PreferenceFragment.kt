@@ -14,6 +14,12 @@ import com.example.cmpt362_finalproject.ui.initial.CategoriesFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.graphics.Color
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.radiobutton.MaterialRadioButton
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 
 class PreferenceFragment : Fragment() {
     private lateinit var userPreferenceRepository: UserPreferenceRepository
@@ -21,24 +27,193 @@ class PreferenceFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_preference, container, false)
+        // Create the base layout
+        val rootView = CoordinatorLayout(requireContext()).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(resources.getColor(R.color.background_light, null))
+        }
         
         // Initialize repository
         val database = UserPreferenceDatabase.getInstance(requireContext())
         userPreferenceRepository = UserPreferenceRepository(database.userPreferenceDao)
         
-        val radioGroup = view.findViewById<RadioGroup>(R.id.saving_preferences_group)
-        val fab = view.findViewById<FloatingActionButton>(R.id.confirm_preferences_fab)
-
+        // Create a new card for the savings preferences
+        val card = MaterialCardView(requireContext()).apply {
+            layoutParams = CoordinatorLayout.LayoutParams(
+                CoordinatorLayout.LayoutParams.MATCH_PARENT,
+                CoordinatorLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(32, 32, 32, 32)
+            }
+            elevation = 4f
+            radius = 16f
+            setCardBackgroundColor(Color.WHITE)
+        }
+        
+        // Create a container for the card content
+        val cardContent = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            setPadding(32, 32, 32, 32)
+        }
+        
+        // Add title
+        val title = TextView(requireContext()).apply {
+            text = "How would you like to approach your savings goal?"
+            textSize = 20f
+            setTextColor(Color.BLACK)
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, 32)
+            }
+        }
+        cardContent.addView(title)
+        
+        // Create radio group
+        val radioGroup = RadioGroup(requireContext()).apply {
+            id = View.generateViewId()
+            orientation = RadioGroup.VERTICAL
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+        
+        // Add aggressive option
+        val aggressiveButton = MaterialRadioButton(requireContext()).apply {
+            id = View.generateViewId()
+            text = "Aggressive"
+            textSize = 16f
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 16, 0, 8)
+            }
+        }
+        radioGroup.addView(aggressiveButton)
+        
+        val aggressiveDesc = TextView(requireContext()).apply {
+            text = "Monthly Limit: $2,000\nSavings Goal: $5,000\nSpending Challenge: $1,500\n\nMaximize savings to reach your goal as fast as possible."
+            textSize = 14f
+            setTextColor(Color.GRAY)
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(64, 0, 0, 24)
+            }
+        }
+        radioGroup.addView(aggressiveDesc)
+        
+        // Add normal option
+        val normalButton = MaterialRadioButton(requireContext()).apply {
+            id = View.generateViewId()
+            text = "Normal"
+            textSize = 16f
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 16, 0, 8)
+            }
+        }
+        radioGroup.addView(normalButton)
+        
+        val normalDesc = TextView(requireContext()).apply {
+            text = "Monthly Limit: $1,500\nSavings Goal: $3,000\nSpending Challenge: $1,000\n\nSave moderately, aiming for steady progress."
+            textSize = 14f
+            setTextColor(Color.GRAY)
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(64, 0, 0, 24)
+            }
+        }
+        radioGroup.addView(normalDesc)
+        
+        // Add minimum option
+        val minimumButton = MaterialRadioButton(requireContext()).apply {
+            id = View.generateViewId()
+            text = "Minimum"
+            textSize = 16f
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 16, 0, 8)
+            }
+        }
+        radioGroup.addView(minimumButton)
+        
+        val minimumDesc = TextView(requireContext()).apply {
+            text = "Monthly Limit: $1,000\nSavings Goal: $1,000\nSpending Challenge: $500\n\nFocus on meeting your goal with minimal savings pressure."
+            textSize = 14f
+            setTextColor(Color.GRAY)
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(64, 0, 0, 24)
+            }
+        }
+        radioGroup.addView(minimumDesc)
+        
+        // Add note
+        val note = TextView(requireContext()).apply {
+            text = "Note: These values can be customized anytime in the Settings."
+            textSize = 14f
+            setTextColor(Color.GRAY)
+            setTypeface(null, android.graphics.Typeface.ITALIC)
+            gravity = android.view.Gravity.CENTER
+            layoutParams = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 32, 0, 0)
+            }
+        }
+        
+        // Add all views to card
+        cardContent.addView(radioGroup)
+        cardContent.addView(note)
+        card.addView(cardContent)
+        
+        // Add card to main container
+        rootView.addView(card)
+        
+        // Add FAB
+        val fab = FloatingActionButton(requireContext()).apply {
+            id = View.generateViewId()
+            setImageResource(android.R.drawable.ic_menu_send)
+            layoutParams = CoordinatorLayout.LayoutParams(
+                CoordinatorLayout.LayoutParams.WRAP_CONTENT,
+                CoordinatorLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+                setMargins(0, 0, 32, 32)
+            }
+        }
+        rootView.addView(fab)
+        
         fab.setOnClickListener {
             val selectedPreference = when (radioGroup.checkedRadioButtonId) {
-                R.id.preference_aggressive -> {
+                aggressiveButton.id -> {
                     initializePreferences(2000.0, 5000.0, 1500.0) // Aggressive savings
                 }
-                R.id.preference_normal -> {
+                normalButton.id -> {
                     initializePreferences(1500.0, 3000.0, 1000.0) // Normal savings
                 }
-                R.id.preference_minimum -> {
+                minimumButton.id -> {
                     initializePreferences(1000.0, 1000.0, 500.0) // Minimum savings
                 }
                 else -> null
@@ -51,7 +226,7 @@ class PreferenceFragment : Fragment() {
                     .commit()
             }
         }
-        return view
+        return rootView
     }
 
     private fun initializePreferences(monthlyLimit: Double, savingsGoal: Double, spendingChallenge: Double) {

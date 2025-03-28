@@ -26,7 +26,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        chart = view.findViewById(R.id.monthlySpendingChart)
+        chart = view.findViewById(R.id.chartSpendingTrends)
         setupChart()
         
         // Initialize database components

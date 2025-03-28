@@ -32,18 +32,22 @@ import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import com.example.cmpt362_finalproject.manager.FirestoreManager
 import com.example.cmpt362_finalproject.api.ApiClient
 import com.example.cmpt362_finalproject.manager.TransactionManager
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.lifecycleScope
+import androidx.camera.view.PreviewView
 
 // import textService
 
 class CameraFragment : Fragment() {
     private lateinit var viewModel: CameraViewModel
     private var currentPhotoPath: String? = null
-    private lateinit var receiptImageView: ImageView
+    private lateinit var viewFinder: PreviewView
     private var currentBitmap: Bitmap? = null
+    private lateinit var submitButton: MaterialButton
     
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -92,49 +96,60 @@ class CameraFragment : Fragment() {
             CameraViewModelFactory(transactionManager)
         )[CameraViewModel::class.java]
         
-        receiptImageView = view.findViewById(R.id.receiptImageView)
-        val submitButton = view.findViewById<Button>(R.id.submitButton)
+        viewFinder = view.findViewById(R.id.viewFinder)
         
-        view.findViewById<View>(R.id.captureButton).setOnClickListener {
+        val captureButton = view.findViewById<MaterialButton>(R.id.captureButton)
+        captureButton.setOnClickListener {
             checkCameraPermission()
         }
         
-        view.findViewById<View>(R.id.galleryButton).setOnClickListener {
+        val fabGallery = view.findViewById<ExtendedFloatingActionButton>(R.id.fabGallery)
+        fabGallery.setOnClickListener {
             openGallery()
         }
 
-        submitButton.setOnClickListener {
-            Log.d("CameraFragment", "Submit button clicked")
-            submitButton.isEnabled = false  // Disable immediately after click
-            
-            currentBitmap?.let { bitmap ->
-                Log.d("CameraFragment", "Processing bitmap")
-                val compressedBitmap = compressBitmap(bitmap)
-                val base64Image = bitmapToBase64(compressedBitmap)
-                Log.d("CameraFragment", "Base64 string length: ${base64Image.length}")
-                viewModel.processReceipt(base64Image)
-                currentBitmap = null  // Clear the current bitmap
-                receiptImageView.setImageResource(R.drawable.placeholder)  // Reset image view
-            } ?: run {
-                Log.e("CameraFragment", "No image selected")
-                Toast.makeText(requireContext(), "Please select or capture an image first", Toast.LENGTH_SHORT).show()
-                submitButton.isEnabled = true  // Re-enable only if no image was selected
+        // Add a submit button dynamically since it's not in the layout
+        submitButton = MaterialButton(requireContext()).apply {
+            text = "Submit Receipt"
+            isEnabled = false
+            id = View.generateViewId() // Generate an ID for the button
+            setOnClickListener {
+                Log.d("CameraFragment", "Submit button clicked")
+                isEnabled = false  // Disable immediately after click
+                
+                currentBitmap?.let { bitmap ->
+                    Log.d("CameraFragment", "Processing bitmap")
+                    val compressedBitmap = compressBitmap(bitmap)
+                    val base64Image = bitmapToBase64(compressedBitmap)
+                    Log.d("CameraFragment", "Base64 string length: ${base64Image.length}")
+                    viewModel.processReceipt(base64Image)
+                    currentBitmap = null  // Clear the current bitmap
+                    // Reset view finder
+                } ?: run {
+                    Log.e("CameraFragment", "No image selected")
+                    Toast.makeText(requireContext(), "Please select or capture an image first", Toast.LENGTH_SHORT).show()
+                    isEnabled = true  // Re-enable only if no image was selected
+                }
             }
         }
+
+        // Find the first card view's linear layout to add the submit button
+        val cardLayout = view.findViewById<ViewGroup>(R.id.viewFinder).parent as ViewGroup
+        cardLayout.addView(submitButton)
 
         // Observe API response
         viewModel.apiResponse.observe(viewLifecycleOwner) { response ->
             Log.d("CameraFragment", "API Response received: $response")
             Toast.makeText(requireContext(), "Receipt processed: $response", Toast.LENGTH_LONG).show()
             currentBitmap = null  // Clear the current image
-            receiptImageView.setImageResource(R.drawable.placeholder)  // Reset to placeholder
-            view?.findViewById<Button>(R.id.submitButton)?.isEnabled = false  // Keep disabled after success
+            // Reset view finder
+            submitButton.isEnabled = false  // Keep disabled after success
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
             Log.e("CameraFragment", "API Error: $error")
             Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
-            view?.findViewById<Button>(R.id.submitButton)?.isEnabled = true  // Re-enable on error
+            submitButton.isEnabled = true  // Re-enable on error
         }
         
         return view
@@ -219,8 +234,9 @@ class CameraFragment : Fragment() {
 
                 withContext(Dispatchers.Main) {
                     currentBitmap = bitmap
-                    receiptImageView.setImageBitmap(bitmap)
-                    view?.findViewById<Button>(R.id.submitButton)?.isEnabled = true
+                    // Show image in some way in the viewFinder
+                    // (CameraX doesn't directly support showing a static image, so we may need another approach)
+                    submitButton.isEnabled = true
                     Log.d("CameraFragment", "Image processed successfully")
                 }
             } catch (e: Exception) {

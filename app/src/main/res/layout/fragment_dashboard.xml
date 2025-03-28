@@ -1,232 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:background="#F5F5F5">
+    android:background="@color/background_light">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <!-- Total Balance Card -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#000000"
-            android:padding="18dp">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="@color/primary">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#000000"
-                android:padding="16dp"
-                android:layout_gravity="center">
+                android:padding="24dp"
+                app:layout_collapseMode="parallax">
 
-                <!-- Title -->
                 <TextView
-                    android:id="@+id/totalBalanceLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Total Balance"
-                    android:textColor="#B0B0B0"
-                    android:textSize="14sp"
-                    android:layout_gravity="center"
-                    tools:ignore="HardcodedText" />
-
-                <!-- Total Balance Value -->
-                <TextView
-                    android:id="@+id/totalBalanceValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$0.00"
-                    android:textColor="#FFFFFF"
+                    android:text="Dashboard"
                     android:textSize="32sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_gravity="center"
-                    android:paddingTop="8dp" />
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-medium"/>
 
-                <!-- Income and Spend -->
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_horizontal">
-
-                    <TextView
-                        android:id="@+id/monthlyCredit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Monthly Credit"
-                        android:textColor="#00FF00"
-                        android:textSize="14sp"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/monthlyCreditValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$0.00"
-                        android:textColor="#00FF00"
-                        android:textSize="14sp"
-                        android:layout_marginEnd="32dp" />
-
-                    <TextView
-                        android:id="@+id/spendLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Spend"
-                        android:textColor="#FF0000"
-                        android:textSize="14sp"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/spendValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$56,510.34"
-                        android:textColor="#FF0000"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                    android:layout_marginTop="4dp"
+                    android:text="Your Financial Overview"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary"/>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Monthly Limit Card -->
-        <androidx.cardview.widget.CardView
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:padding="16dp"
-            android:background="#D7BBF5">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#D7BBF5"
-                android:padding="16dp"
-                android:layout_gravity="center">
-
-                <!-- Title -->
-                <TextView
-                    android:id="@+id/monthlyLimitLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Limit for this Month"
-                    android:textColor="#333333"
-                    android:textSize="14sp"
-                    android:layout_gravity="center" />
-
-                <!-- Monthly Limit Value -->
-                <TextView
-                    android:id="@+id/monthlyLimitValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$700.51"
-                    android:textColor="#000000"
-                    android:textSize="32sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_gravity="center"
-                    android:paddingTop="8dp" />
-
-                <!-- Progress Bar -->
-                <ProgressBar
-                    android:id="@+id/monthlyProgress"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:progressDrawable="@drawable/progress_bar_custom"
-                    android:progress="73"
-                    android:layout_marginTop="8dp" />
-
-                <!-- Monthly Progress Details -->
-                <TextView
-                    android:id="@+id/monthlyProgressDetails"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.00 / 0.00"
-                    android:textColor="#888888"
-                    android:textSize="14sp"
-                    android:layout_gravity="center" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- AI Summary Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
             android:padding="16dp">
 
-            <LinearLayout
+            <!-- Monthly Overview Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="AI Summary"
+                        android:text="Monthly Overview"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-medium"/>
 
-                    <ImageButton
-                        android:id="@+id/refreshSummaryButton"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_refresh"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Refresh summary"/>
-                </LinearLayout>
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/chartMonthlySpending"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="16dp"/>
 
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:scrollbars="vertical"
-                    android:fadeScrollbars="false"
-                    android:nestedScrollingEnabled="true">
-
-                    <TextView
-                        android:id="@+id/summaryTextView"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="16dp"
+                        android:weightSum="2">
+
+                    <TextView
+                            android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total Spending"
                         android:textSize="14sp"
-                        android:text="Tap refresh to generate summary"/>
+                            android:textColor="@color/text_secondary"/>
 
-                </ScrollView>
+                    <TextView
+                            android:id="@+id/textViewTotalSpending"
+                            android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="$1,250.00"
+                            android:textSize="18sp"
+                            android:textColor="@color/primary"
+                            android:gravity="end"
+                            android:fontFamily="sans-serif-medium"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            <!-- Category Breakdown Card -->
+            <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp">
 
-        <!-- Recent Transactions -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                    android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                        android:text="Category Breakdown"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-medium"/>
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/chartCategoryBreakdown"
+                    android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="16dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:clipToPadding="false"
+                        android:scrollbars="none"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Recent Transactions Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Recent Transactions"
             android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
             android:fontFamily="sans-serif-medium"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp" />
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"/>
 
-        <!-- Transactions RecyclerView -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonViewAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View All"
+                            android:textColor="@color/primary"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                    </RelativeLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewTransactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+                        android:padding="16dp"
+                        android:clipToPadding="false"
+                        android:scrollbars="none"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:text="Add Transaction"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white"
+        app:backgroundTint="@color/primary"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

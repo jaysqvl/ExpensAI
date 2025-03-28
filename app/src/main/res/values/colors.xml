@@ -1,22 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="primary">#6200EE</color> <!-- Replace with your desired color -->
-    <color name="secondary">#03A9F4</color> <!-- Light blue -->
-    <!-- Background -->
-
-
-
-    <color name="background_light">#F3F4F6</color> <!-- Keep this as is for contrast -->
-    <color name="card_shade">#E0E0E0</color> <!-- Slightly darker for the card background -->
-    <color name="bill_tile_shade">#D6D6D6</color> <!-- Darker tile shade for better visibility -->
-    <color name="error_red">#D32F2F</color> <!-- Error red remains as is -->
-    <color name="ic_launcher_background">@color/white</color>
+    <!-- Primary Colors -->
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
+    
+    <!-- Accent Colors -->
+    <color name="accent">#FF4081</color>
+    <color name="accent_dark">#F50057</color>
+    <color name="accent_light">#FF80AB</color>
+    
+    <!-- Background Colors -->
+    <color name="background_light">#F5F5F5</color>
+    <color name="background_dark">#121212</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1E1E1E</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3FFFFFF</color>
+    <color name="text_hint_dark">#80FFFFFF</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FFC107</color>
+    <color name="info">#2196F3</color>
+    
+    <!-- Utility Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="ripple_color">#1F000000</color>
+    
+    <!-- Card Colors -->
+    <color name="card_shade">#FFFFFF</color>
+    <color name="card_shade_dark">#2D2D2D</color>
+    <color name="bill_tile_shade">#F5F5F5</color>
+    
+    <!-- Bottom Navigation Colors -->
+    <color name="bottom_nav_selected">@color/primary</color>
+    <color name="bottom_nav_unselected">@color/text_secondary</color>
 </resources>
 

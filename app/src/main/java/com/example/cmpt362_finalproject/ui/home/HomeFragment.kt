@@ -18,6 +18,7 @@ import com.example.cmpt362_finalproject.data.UserPreferenceRepository
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseDatabase
 import com.example.cmpt362_finalproject.ui.transactions.PurchaseRepository
 import com.example.cmpt362_finalproject.manager.FirestoreManager
+import com.example.cmpt362_finalproject.ui.transactions.ManualTransactionActivity
 
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 class HomeFragment : Fragment() {
@@ -47,6 +48,12 @@ class HomeFragment : Fragment() {
         binding.buttonAddNewBill.setOnClickListener {
             val intent = Intent(requireContext(), AddBillActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ADD_BILL)
+        }
+        
+        // Add transaction when FAB is clicked
+        binding.fabAddTransaction.setOnClickListener {
+            val intent = Intent(requireContext(), ManualTransactionActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE_ADD_TRANSACTION)
         }
 
         return view
@@ -110,6 +117,10 @@ class HomeFragment : Fragment() {
             val amount = data.getStringExtra("amount") ?: return
             addBill(BillModel(name, dueDate, amount)) // Add new bill
         }
+        else if (requestCode == REQUEST_CODE_ADD_TRANSACTION && resultCode == Activity.RESULT_OK) {
+            // Transaction has been added directly to the database
+            // No need to handle result data
+        }
     }
 
     // Add bill to the list and refresh the adapter
@@ -126,5 +137,6 @@ class HomeFragment : Fragment() {
 
     companion object {
         private const val REQUEST_CODE_ADD_BILL = 1
+        private const val REQUEST_CODE_ADD_TRANSACTION = 2
     }
 }

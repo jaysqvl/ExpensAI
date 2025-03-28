@@ -161,4 +161,10 @@ class DashboardViewModel @Inject constructor(
             }
         }
     }
+
+    fun refreshData() {
+        updateTotalBalance()
+        updateMonthlyProgress()
+        checkAndRefreshSummary()
+    }
 }
