@@ -16,7 +16,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,6 +47,7 @@ class CameraFragment : Fragment() {
     private lateinit var viewFinder: PreviewView
     private var currentBitmap: Bitmap? = null
     private lateinit var submitButton: MaterialButton
+    private lateinit var imagePreview: ImageView
     
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -98,8 +98,25 @@ class CameraFragment : Fragment() {
         
         viewFinder = view.findViewById(R.id.viewFinder)
         
+        // Add an ImageView on top of the PreviewView to display selected images
+        imagePreview = ImageView(requireContext())
+        imagePreview.id = View.generateViewId()
+        imagePreview.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        imagePreview.scaleType = ImageView.ScaleType.FIT_CENTER
+        imagePreview.visibility = View.GONE
+        
+        // Find the parent of the viewFinder and add the ImageView at the same position
+        val parent = viewFinder.parent as ViewGroup
+        parent.addView(imagePreview, parent.indexOfChild(viewFinder) + 1)
+        
         val captureButton = view.findViewById<MaterialButton>(R.id.captureButton)
         captureButton.setOnClickListener {
+            // Hide the image preview when starting camera
+            imagePreview.visibility = View.GONE
+            viewFinder.visibility = View.VISIBLE
             checkCameraPermission()
         }
         
@@ -124,7 +141,8 @@ class CameraFragment : Fragment() {
                     Log.d("CameraFragment", "Base64 string length: ${base64Image.length}")
                     viewModel.processReceipt(base64Image)
                     currentBitmap = null  // Clear the current bitmap
-                    // Reset view finder
+                    
+                    // Don't reset the UI yet - wait for the response
                 } ?: run {
                     Log.e("CameraFragment", "No image selected")
                     Toast.makeText(requireContext(), "Please select or capture an image first", Toast.LENGTH_SHORT).show()
@@ -142,7 +160,10 @@ class CameraFragment : Fragment() {
             Log.d("CameraFragment", "API Response received: $response")
             Toast.makeText(requireContext(), "Receipt processed: $response", Toast.LENGTH_LONG).show()
             currentBitmap = null  // Clear the current image
-            // Reset view finder
+            
+            // Reset UI state
+            resetUIState()
+            
             submitButton.isEnabled = false  // Keep disabled after success
         }
 
@@ -151,6 +172,9 @@ class CameraFragment : Fragment() {
             Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
             submitButton.isEnabled = true  // Re-enable on error
         }
+        
+        // Store the imagePreview reference in a property for access in processImage
+        this.imagePreview = imagePreview
         
         return view
     }
@@ -180,6 +204,10 @@ class CameraFragment : Fragment() {
     }
 
     private fun launchCamera() {
+        // Reset UI state before launching camera
+        imagePreview.visibility = View.GONE
+        viewFinder.visibility = View.VISIBLE
+        
         val photoFile = createImageFile()
         photoFile.also { file ->
             val photoURI = FileProvider.getUriForFile(
@@ -196,6 +224,10 @@ class CameraFragment : Fragment() {
     }
 
     private fun openGallery() {
+        // Clear any existing image state
+        currentBitmap = null
+        submitButton.isEnabled = false
+        
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         galleryLauncher.launch(intent)
     }
@@ -234,10 +266,14 @@ class CameraFragment : Fragment() {
 
                 withContext(Dispatchers.Main) {
                     currentBitmap = bitmap
-                    // Show image in some way in the viewFinder
-                    // (CameraX doesn't directly support showing a static image, so we may need another approach)
+                    
+                    // Display the image in the ImageView
+                    viewFinder.visibility = View.INVISIBLE
+                    imagePreview.setImageBitmap(bitmap)
+                    imagePreview.visibility = View.VISIBLE
+                    
                     submitButton.isEnabled = true
-                    Log.d("CameraFragment", "Image processed successfully")
+                    Log.d("CameraFragment", "Image processed successfully and displayed")
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -277,6 +313,17 @@ class CameraFragment : Fragment() {
 
         Log.d("CameraFragment", "Final image quality: $quality%, Size: ${base64String.length} chars")
         return base64String
+    }
+
+    private fun resetUIState() {
+        // Reset ImageView and PreviewView state
+        imagePreview.visibility = View.GONE
+        imagePreview.setImageBitmap(null)
+        viewFinder.visibility = View.VISIBLE
+        
+        // For the camera, we might need to restart the camera
+        // This depends on how your camera is implemented
+        // If using CameraX, you might need code to restart the camera preview
     }
 
     companion object {
