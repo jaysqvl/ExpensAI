@@ -1,6 +1,6 @@
 # ExpensAI
 
-ExpensAI is an intelligent expense tracking application that combines traditional financial management with AI-powered insights. Built for Android using modern architecture and best practices, it helps users manage their finances more effectively through smart receipt scanning, automated categorization, and personalized spending insights.
+ExpensAI is a team-built Android expense-tracking prototype for CMPT362. It combines local transaction history, receipt scanning, and generated spending summaries using Kotlin, Room, Firebase Authentication, and Python HTTP services.
 
 ## 🌟 Key Features
 
@@ -10,8 +10,8 @@ ExpensAI is an intelligent expense tracking application that combines traditiona
 - **Customizable Categories**: Organize transactions with user-defined categories
 - **Spending Goals**: Set and track monthly spending limits and savings goals
 - **Visual Analytics**: View spending patterns through interactive charts
-- **Cloud Sync**: Secure data synchronization with Firebase
-- **Multi-user Support**: Individual user accounts with personalized preferences
+- **Cloud Sync**: Firestore transaction-sync code is present but currently disabled
+- **Sign-in**: Firebase Authentication and user preferences
 
 ## 🛠️ Technology Stack
 
@@ -21,7 +21,7 @@ ExpensAI is an intelligent expense tracking application that combines traditiona
 - **Authentication**: Firebase Auth
 - **Cloud Storage**: Cloud Firestore
 - **AI/ML Services**: 
-  - OpenAI GPT-4 for transaction analysis
+  - OpenAI GPT-4o mini for receipt extraction and spending summaries
   - Computer Vision for receipt processing
 - **Charts**: MPAndroidChart
 - **Dependency Injection**: Manual DI with ViewModelFactory
@@ -33,15 +33,15 @@ The application follows clean architecture principles and is organized into the 
 
 - **UI Layer**: Activities, Fragments, and ViewModels
 - **Data Layer**: Repositories, DAOs, and Remote Data Sources
-- **Domain Layer**: Use Cases and Business Logic
+- **Transaction Processing**: Receipt response parsing and local transaction creation
 - **Cloud Services**: Text and Vision microservices for AI processing
 
-## 🔒 Security Features
+## Data and Service Status
 
-- Secure user authentication via Firebase
-- Local data encryption with Room
-- Safe API communication over HTTPS
-- Protected cloud functions with proper authentication
+- Sign-in uses Firebase Authentication. Transactions are stored in a local Room database without configured encryption.
+- Firestore transaction sync is disabled in both `PurchaseRepository` and `TransactionSyncService`.
+- The app uses HTTPS service URLs. The checked-in Python handlers do not verify Firebase tokens; server-side access control must be configured before exposing a deployment.
+- The current Android tests are template smoke tests; receipt processing and synchronization do not have automated coverage.
 
 ## 🚀 Future Enhancements
 
@@ -65,4 +65,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+No project-level LICENSE file is currently included.
